@@ -272,36 +272,49 @@ export default function ProjectDetailPage() {
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterIcon className="size-4 text-muted-foreground" />
-        <Select value={statusFilter} onValueChange={(value) => value && setStatusFilter(value)}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="todo">To Do</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={assigneeFilter} onValueChange={(value) => value && setAssigneeFilter(value)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Assignee" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Assignees</SelectItem>
-            <SelectItem value={userDetails?.id ?? ""}>
-              {userDetails?.name ?? "Me"}
-            </SelectItem>
-            <SelectItem value="unassigned">Unassigned</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap items-center gap-4">
+        
+
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 pl-1">
+            Status
+          </label>
+          <Select value={statusFilter} onValueChange={(value) => value && setStatusFilter(value)}>
+            <SelectTrigger className="w-[150px] h-8 text-xs">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="todo">To Do</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="done">Done</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 pl-1">
+            Assignee
+          </label>
+          <Select value={assigneeFilter} onValueChange={(value) => value && setAssigneeFilter(value)}>
+            <SelectTrigger className="w-[160px] h-8 text-xs">
+              <SelectValue placeholder="All Assignees" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Assignees</SelectItem>
+              <SelectItem value={userDetails?.id ?? ""}>
+                {userDetails?.name ?? "Me"}
+              </SelectItem>
+              <SelectItem value="unassigned">Unassigned</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {(statusFilter !== "all" || assigneeFilter !== "all") && (
           <button
             type="button"
             onClick={() => { setStatusFilter("all"); setAssigneeFilter("all"); }}
-            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+            className="self-end mb-0.5 text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
           >
             Clear filters
           </button>
