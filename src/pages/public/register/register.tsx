@@ -11,6 +11,7 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldSeparator,
   FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -18,30 +19,45 @@ import { GalleryVerticalEndIcon } from "lucide-react";
 import { authApi } from "@/apis/auth";
 import { setAuthenticationSlice } from "@/redux/slices/auth/authSlice";
 
-interface LoginFormProps extends React.ComponentProps<"div"> {
-  onSwitchToRegister?: () => void;
+interface RegisterFormProps extends React.ComponentProps<"div"> {
+  onSwitchToLogin?: () => void;
 }
 
-export function LoginForm({ className, onSwitchToRegister, ...props }: LoginFormProps) {
+export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterFormProps) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+    
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
+    
     if (!formData.password) {
       newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -52,7 +68,8 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
 
     setIsLoading(true);
     try {
-      const response = await authApi.login(formData);
+      const { confirmPassword, ...registerData } = formData;
+      const response = await authApi.register(registerData);
       dispatch(
         setAuthenticationSlice({
           isAuthenticated: true,
@@ -61,13 +78,13 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
         })
       );
       localStorage.setItem("token", response.token);
-      toast.success("Login successful!");
+      toast.success("Registration successful!");
       navigate("/dashboard");
     } catch (error: any) {
       if (error?.fields) {
         setErrors(error.fields);
       } else {
-        toast.error(error?.error || "Login failed");
+        toast.error(error?.error || "Registration failed");
       }
     } finally {
       setIsLoading(false);
@@ -96,21 +113,34 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
               </div>
               <span className="sr-only">TaskFlow</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to TaskFlow</h1>
+            <h1 className="text-xl font-bold">Create your account</h1>
             <FieldDescription>
-              Don&apos;t have an account?{" "}
+              Already have an account?{" "}
               <a
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  onSwitchToRegister?.();
+                  onSwitchToLogin?.();
                 }}
                 className="underline underline-offset-4 hover:text-primary"
               >
-                Sign up
+                Sign in
               </a>
             </FieldDescription>
           </div>
+          <Field>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleChange}
+              aria-invalid={!!errors.name}
+            />
+            {errors.name && <FieldError errors={[{ message: errors.name }]} />}
+          </Field>
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
             <Input
@@ -130,7 +160,7 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
               id="password"
               name="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="At least 6 characters"
               value={formData.password}
               onChange={handleChange}
               aria-invalid={!!errors.password}
@@ -138,8 +168,21 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
             {errors.password && <FieldError errors={[{ message: errors.password }]} />}
           </Field>
           <Field>
+            <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              aria-invalid={!!errors.confirmPassword}
+            />
+            {errors.confirmPassword && <FieldError errors={[{ message: errors.confirmPassword }]} />}
+          </Field>
+          <Field>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "Creating account..." : "Create account"}
             </Button>
           </Field>
         </FieldGroup>

@@ -3,7 +3,6 @@ import type { AuthenticationState } from "./types";
 
 const AUTH_STORAGE_KEY = "authState";
 
-// Helper functions for localStorage
 const loadAuthFromStorage = (): Partial<AuthenticationState> => {
   try {
     const stored = localStorage.getItem(AUTH_STORAGE_KEY);
@@ -32,12 +31,10 @@ const clearAuthFromStorage = (): void => {
   }
 };
 
-// Initialize state from localStorage if available
 const storedAuth = loadAuthFromStorage();
 const initialState: AuthenticationState = {
   isAuthenticated: storedAuth.isAuthenticated ?? false,
   token: storedAuth.token ?? null,
-  userType: storedAuth.userType ?? null,
   userDetails: storedAuth.userDetails ?? null,
 };
 
@@ -60,7 +57,6 @@ const authSlice = createSlice({
       const clearedState: AuthenticationState = {
         isAuthenticated: false,
         token: null,
-        userType: null,
         userDetails: null,
       };
       localStorage.removeItem("token");
