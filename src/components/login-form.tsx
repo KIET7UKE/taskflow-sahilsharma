@@ -101,12 +101,7 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
             </Field>
             
             <Field>
-              <div className="flex items-center justify-between">
-                <FieldLabel htmlFor="password" className="text-sm font-medium">Password</FieldLabel>
-                <a href="#" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
-                  Forgot password?
-                </a>
-              </div>
+              <FieldLabel htmlFor="password" className="text-sm font-medium">Password</FieldLabel>
               <Input
                 id="password"
                 name="password"
