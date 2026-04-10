@@ -6,12 +6,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - VITE_API_URL=http://localhost:4000/api
       - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID:-}
-    volumes:
-      - .:/app
-      - /app/node_modules
     stdin_open: true
     depends_on:
       - db
@@ -22,8 +19,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-taskflow}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-taskflow123}
       - POSTGRES_DB=${POSTGRES_DB:-taskflow}
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
