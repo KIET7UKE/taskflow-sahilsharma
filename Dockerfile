@@ -2,6 +2,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ARG VITE_API_URL
+ARG VITE_USE_MSW
+
 COPY package*.json ./
 RUN npm ci
 

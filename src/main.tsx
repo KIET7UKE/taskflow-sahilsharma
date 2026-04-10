@@ -18,8 +18,14 @@ store.dispatch(initializeAuthenticationState());
  * @returns {Promise<void>}
  */
 async function prepare() {
-  if (import.meta.env.DEV) {
-    return worker.start();
+  if (import.meta.env.DEV || import.meta.env.VITE_USE_MSW === "true") {
+    // For production builds, we need to specify the path to the worker script
+    return worker.start({
+      onUnhandledRequest: "bypass",
+      serviceWorker: {
+        url: "/mockServiceWorker.js",
+      },
+    });
   }
   return Promise.resolve();
 }
