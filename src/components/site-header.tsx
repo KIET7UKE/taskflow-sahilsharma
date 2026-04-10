@@ -13,6 +13,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
+import { ModeToggle } from "@/components/mode-toggle";
+
 export function SiteHeader() {
   const location = useLocation();
   const { userDetails } = useSelector((state: RootState) => state.auth);
@@ -67,9 +69,12 @@ export function SiteHeader() {
             )}
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="hidden sm:inline">Welcome,</span>
-          <span className="font-medium text-foreground">{userDetails?.name}</span>
+        <div className="ml-auto flex items-center gap-4 text-sm">
+          <ModeToggle />
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="hidden sm:inline">Welcome,</span>
+            <span className="font-medium text-foreground">{userDetails?.name}</span>
+          </div>
         </div>
       </div>
     </header>

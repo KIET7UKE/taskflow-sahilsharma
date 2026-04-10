@@ -12,7 +12,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    stdin: true
+    stdin_open: true
     depends_on:
       - db
 

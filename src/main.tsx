@@ -7,6 +7,7 @@ import App from "./App.tsx";
 import { initializeAuthenticationState } from "./redux/slices/auth/authSlice.ts";
 import store from "./redux/store/store";
 import { worker } from "./mocks/browser";
+import { ThemeProvider } from "./components/theme-provider";
 
 store.dispatch(initializeAuthenticationState());
 
@@ -28,14 +29,16 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 /**
  * Application Entry Point.
  * Initializes the MSW worker, sets up the Redux store, and renders the React application
- * wrapped in necessary providers (Google OAuth, Router, Redux).
+ * wrapped in necessary providers (Google OAuth, Router, Redux, Theme).
  */
 prepare().then(() => {
   createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <BrowserRouter>
         <Provider store={store}>
-          <App />
+          <ThemeProvider defaultTheme="light" storageKey="taskflow-theme">
+            <App />
+          </ThemeProvider>
         </Provider>
       </BrowserRouter>
     </GoogleOAuthProvider>
