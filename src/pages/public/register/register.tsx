@@ -22,6 +22,16 @@ interface RegisterFormProps extends React.ComponentProps<"div"> {
   onSwitchToLogin?: () => void;
 }
 
+/**
+ * RegisterForm Component.
+ * A comprehensive form for new user registration.
+ * Handles validation and submission of user details to create a new account.
+ *
+ * @param {RegisterFormProps} props - The component props.
+ * @param {string} props.className - Additional CSS classes.
+ * @param {Function} props.onSwitchToLogin - Callback to switch to the login view.
+ * @returns {JSX.Element} The rendered registration form.
+ */
 export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterFormProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -34,6 +44,12 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
     confirmPassword: "",
   });
 
+  /**
+   * Validates the registration form data.
+   * Ensures all required fields are present, email is valid, and passwords match.
+   *
+   * @returns {boolean} True if the form is valid, false otherwise.
+   */
   const validate = () => {
     const newErrors: Record<string, string> = {};
     
@@ -61,6 +77,12 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Handles the submission of the registration form.
+   * Dispatches the registration thunk and navigates to the dashboard on success.
+   *
+   * @param {React.FormEvent} e - The form event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -82,6 +104,12 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
     }
   };
 
+  /**
+   * Handles input changes in the registration form.
+   * Updates state and clears corresponding validation errors.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

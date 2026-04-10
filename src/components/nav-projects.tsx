@@ -23,6 +23,14 @@ import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import { AppDispatch } from "@/redux/store/store"
 
+/**
+ * NavProjects Component.
+ * Renders a list of projects in the sidebar with actions for viewing and deleting.
+ *
+ * @param {Object} props - Component props.
+ * @param {Array} props.projects - List of project objects.
+ * @returns {JSX.Element} The rendered projects menu.
+ */
 export function NavProjects({
   projects,
 }: {
@@ -37,6 +45,13 @@ export function NavProjects({
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
+  /**
+   * Handles the deletion of a project.
+   * Prompts for confirmation before dispatching the delete action.
+   *
+   * @param {string} id - The unique identifier of the project to delete.
+   * @param {string} name - The display name of the project for confirmation.
+   */
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete "${name}"?`)) {
       try {

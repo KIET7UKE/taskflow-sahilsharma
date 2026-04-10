@@ -2,6 +2,10 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authApi } from "@/apis/auth";
 import { setAuthenticationSlice } from "@/redux/slices/auth/authSlice";
 
+/**
+ * Login Thunk.
+ * Handles the user login process, including API call, updating state, and localStorage.
+ */
 export const loginThunk = createAsyncThunk(
   "auth/login",
   async (data: Parameters<typeof authApi.login>[0], { dispatch, rejectWithValue }) => {
@@ -22,6 +26,10 @@ export const loginThunk = createAsyncThunk(
   }
 );
 
+/**
+ * Register Thunk.
+ * Handles the user registration process, including API call and auto-login on success.
+ */
 export const registerThunk = createAsyncThunk(
   "auth/register",
   async (data: Parameters<typeof authApi.register>[0], { dispatch, rejectWithValue }) => {

@@ -21,6 +21,15 @@ interface LoginFormProps extends React.ComponentProps<"div"> {
   onSwitchToRegister?: () => void;
 }
 
+/**
+ * LoginForm Component.
+ * A reusable form for user authentication, supporting email/password login and a quick demo login.
+ *
+ * @param {LoginFormProps} props - The component props.
+ * @param {string} props.className - Additional CSS classes.
+ * @param {Function} props.onSwitchToRegister - Callback to switch to the registration view.
+ * @returns {JSX.Element} The rendered login form.
+ */
 export function LoginForm({ className, onSwitchToRegister, ...props }: LoginFormProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -31,6 +40,12 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
     password: "",
   });
 
+  /**
+   * Validates the login form data.
+   * Checks for required fields and proper email format.
+   *
+   * @returns {boolean} True if the form is valid, false otherwise.
+   */
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.email) {
@@ -45,6 +60,12 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Handles the submission of the login form.
+   * Dispatches the login thunk and navigates to the dashboard on success.
+   *
+   * @param {React.FormEvent} e - The form event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -65,6 +86,10 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
     }
   };
 
+  /**
+   * Performs an automated demo login with pre-defined credentials.
+   * Useful for quick access and showcase purposes.
+   */
   const handleDemoLogin = async () => {
     const demoData = {
       email: "test@example.com",
@@ -85,6 +110,12 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
     }
   };
 
+  /**
+   * Handles input changes in the login form.
+   * Updates state and clears corresponding errors.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));

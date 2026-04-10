@@ -4,6 +4,13 @@ import type { RootState } from "@/redux/reducers/rootReducer";
 import { fetchDashboardStats } from "@/redux/thunks/projectThunks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 
+/**
+ * Dashboard Page Component.
+ * Fetches and displays key performance indicators and statistics for the user.
+ * Shows active projects, total tasks, and completion rates.
+ *
+ * @returns {JSX.Element} The rendered Dashboard page.
+ */
 export default function Dashboard() {
   const { userDetails } = useSelector((state: RootState) => state.auth);
   const { dashboardStats, isLoading } = useSelector((state: RootState) => state.projects);

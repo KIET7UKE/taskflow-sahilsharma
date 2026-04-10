@@ -1,6 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { projectsApi, tasksApi, type CreateProjectRequest, type CreateTaskRequest, type UpdateTaskRequest } from "@/apis/projects";
 
+/**
+ * Fetches the list of all projects for the current user.
+ */
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
   async () => {
@@ -9,6 +12,9 @@ export const fetchProjects = createAsyncThunk(
   }
 );
 
+/**
+ * Fetches a single project by its ID.
+ */
 export const fetchProjectById = createAsyncThunk(
   "projects/fetchProjectById",
   async (id: string) => {
@@ -17,6 +23,9 @@ export const fetchProjectById = createAsyncThunk(
   }
 );
 
+/**
+ * Creates a new project.
+ */
 export const createProject = createAsyncThunk(
   "projects/createProject",
   async (data: CreateProjectRequest) => {
@@ -25,6 +34,9 @@ export const createProject = createAsyncThunk(
   }
 );
 
+/**
+ * Updates an existing project's details.
+ */
 export const updateProject = createAsyncThunk(
   "projects/updateProject",
   async ({ id, data }: { id: string; data: Partial<CreateProjectRequest> }) => {
@@ -33,6 +45,9 @@ export const updateProject = createAsyncThunk(
   }
 );
 
+/**
+ * Deletes a project by its ID.
+ */
 export const deleteProject = createAsyncThunk(
   "projects/deleteProject",
   async (id: string) => {
@@ -41,6 +56,9 @@ export const deleteProject = createAsyncThunk(
   }
 );
 
+/**
+ * Fetches tasks for a specific project, optionally filtered by status or assignee.
+ */
 export const fetchTasks = createAsyncThunk(
   "projects/fetchTasks",
   async ({ projectId, status, assignee }: { projectId: string; status?: string; assignee?: string }) => {
@@ -49,6 +67,9 @@ export const fetchTasks = createAsyncThunk(
   }
 );
 
+/**
+ * Creates a new task within a project.
+ */
 export const createTask = createAsyncThunk(
   "projects/createTask",
   async ({ projectId, data }: { projectId: string; data: CreateTaskRequest }) => {
@@ -57,6 +78,9 @@ export const createTask = createAsyncThunk(
   }
 );
 
+/**
+ * Updates an existing task's details or status.
+ */
 export const updateTask = createAsyncThunk(
   "projects/updateTask",
   async ({ taskId, data }: { taskId: string; data: UpdateTaskRequest }) => {
@@ -65,6 +89,9 @@ export const updateTask = createAsyncThunk(
   }
 );
 
+/**
+ * Deletes a task by its ID.
+ */
 export const deleteTask = createAsyncThunk(
   "projects/deleteTask",
   async (taskId: string) => {
@@ -73,6 +100,9 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
+/**
+ * Fetches overall dashboard statistics.
+ */
 export const fetchDashboardStats = createAsyncThunk(
   "projects/fetchDashboardStats",
   async () => {

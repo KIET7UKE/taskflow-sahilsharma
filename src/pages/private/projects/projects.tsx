@@ -16,6 +16,13 @@ import { FolderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
+/**
+ * ProjectsPage Component.
+ * The main page for managing all user projects.
+ * Displays a list of projects, allows creating new ones, and deleting existing ones.
+ *
+ * @returns {JSX.Element} The rendered projects management page.
+ */
 export default function ProjectsPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -30,6 +37,11 @@ export default function ProjectsPage() {
     dispatch(fetchProjects());
   }, [dispatch]);
 
+  /**
+   * Validates the project creation form.
+   *
+   * @returns {boolean} True if the form is valid, false otherwise.
+   */
   const validateForm = () => {
     const errors: Record<string, string> = {};
     if (!formData.name.trim()) {
@@ -39,6 +51,12 @@ export default function ProjectsPage() {
     return Object.keys(errors).length === 0;
   };
 
+  /**
+   * Handles the creation of a new project.
+   * Dispatches the createProject thunk and updates the local state on success.
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -56,6 +74,12 @@ export default function ProjectsPage() {
     }
   };
 
+  /**
+   * Handles the deletion of a project.
+   * Dispatches the deleteProject thunk and shows a success toast on completion.
+   *
+   * @param {string} projectId - The ID of the project to delete.
+   */
   const handleDeleteProject = async (projectId: string) => {
     try {
       await dispatch(deleteProject(projectId)).unwrap();
@@ -67,10 +91,21 @@ export default function ProjectsPage() {
     }
   };
 
+  /**
+   * Navigates to the details page of a specific project.
+   *
+   * @param {Project} project - The project object to view.
+   */
   const handleProjectClick = (project: Project) => {
     navigate(`/projects/${project.id}`);
   };
 
+  /**
+   * Formats a date string into a user-friendly format (e.g., "Jan 1, 2024").
+   *
+   * @param {string} dateString - The ISO date string to format.
+   * @returns {string} The formatted date.
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",

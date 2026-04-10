@@ -16,6 +16,15 @@ import {
 } from "@/components/ui/sidebar"
 import { ChevronRightIcon } from "lucide-react"
 
+/**
+ * NavMain Component.
+ * Renders the main platform navigation items in the sidebar.
+ * Supports collapsible sub-menus and tooltips for icon-only states.
+ *
+ * @param {Object} props - Component props.
+ * @param {Array} props.items - List of navigation items with optional sub-items.
+ * @returns {JSX.Element} The rendered main navigation menu.
+ */
 export function NavMain({
   items,
 }: {

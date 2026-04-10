@@ -10,6 +10,12 @@ import { worker } from "./mocks/browser";
 
 store.dispatch(initializeAuthenticationState());
 
+/**
+ * Prepares the application environment.
+ * Starts Mocks Service Worker (MSW) in development mode for API mocking.
+ *
+ * @returns {Promise<void>}
+ */
 async function prepare() {
   if (import.meta.env.DEV) {
     return worker.start();
@@ -19,6 +25,11 @@ async function prepare() {
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
+/**
+ * Application Entry Point.
+ * Initializes the MSW worker, sets up the Redux store, and renders the React application
+ * wrapped in necessary providers (Google OAuth, Router, Redux).
+ */
 prepare().then(() => {
   createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

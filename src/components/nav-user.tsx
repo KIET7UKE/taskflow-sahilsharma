@@ -31,6 +31,15 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
+/**
+ * NavUser Component.
+ * Displays the current user's profile information in the sidebar footer.
+ * Provides a dropdown menu with account details and a sign-out action.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object} props.user - The user object containing name, email, and avatar.
+ * @returns {JSX.Element} The rendered user profile navigation.
+ */
 export function NavUser({
   user,
 }: {
@@ -44,6 +53,10 @@ export function NavUser({
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  /**
+   * Logs out the current user.
+   * Dispatches the logout action, clears the local storage token, and redirects to the home page.
+   */
   const handleLogout = () => {
     dispatch(logout())
     localStorage.removeItem("token")

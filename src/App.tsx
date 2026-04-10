@@ -7,6 +7,13 @@ import { ScrollToTop } from "./components/atoms/scroll-to-top";
 import type { RootState } from "./redux/reducers/rootReducer";
 import RouteOutlet from "./routes/routeOutlet";
 
+/**
+ * Root Application Component.
+ * Sets up global providers like Toaster, ScrollToTop, and defines the main routing structure.
+ * Handles both public and private route rendering.
+ *
+ * @returns {JSX.Element} The rendered application layout.
+ */
 function App() {
   const { userDetails } = useSelector((state: RootState) => state.auth);
   console.log(userDetails, "userDetails");
@@ -44,6 +51,12 @@ function App() {
   );
 }
 
+/**
+ * A helper component that handles redirection based on authentication state.
+ * If the user is not authenticated, they are redirected to the login page.
+ *
+ * @returns {JSX.Element | null} Redirects to login if not authenticated, otherwise returns null.
+ */
 const PrivateLoginRedirect = () => {
   const { isAuthenticated } = useSelector(
     (state: RootState) => state.auth
@@ -52,6 +65,7 @@ const PrivateLoginRedirect = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+  return null;
 };
 
 export default App;

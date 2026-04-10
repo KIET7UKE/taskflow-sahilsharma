@@ -15,6 +15,15 @@ import {
 import { GalleryVerticalEndIcon, LayoutDashboardIcon, FolderIcon, PlusIcon } from "lucide-react"
 import type { RootState } from "@/redux/reducers/rootReducer"
 
+/**
+ * AppSidebar Component.
+ * The primary navigation sidebar for the application.
+ * Contains the main navigation links, project list, and user profile section.
+ * Responsive and collapsible.
+ *
+ * @param {React.ComponentProps<typeof Sidebar>} props - Standard Sidebar props.
+ * @returns {JSX.Element} The rendered Sidebar.
+ */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { userDetails } = useSelector((state: RootState) => state.auth);
   const { projects } = useSelector((state: RootState) => state.projects);

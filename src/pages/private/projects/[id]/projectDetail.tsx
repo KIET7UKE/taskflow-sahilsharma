@@ -80,6 +80,14 @@ interface TaskCardProps {
   isDragging?: boolean;
 }
 
+/**
+ * TaskCard Component.
+ * Represents an individual task within the Kanban board.
+ * Supports drag-and-drop sorting and status updates.
+ *
+ * @param {TaskCardProps} props - Component props.
+ * @returns {JSX.Element} The rendered task card.
+ */
 function TaskCard({ task, onEdit, onDelete, onStatusChange, isDragging }: TaskCardProps) {
   const {
     attributes,
@@ -179,6 +187,18 @@ function TaskCard({ task, onEdit, onDelete, onStatusChange, isDragging }: TaskCa
   );
 }
 
+/**
+ * DroppableColumn Component.
+ * A container for tasks in a specific status (e.g., "To Do").
+ * Acts as a drop target for drag-and-drop operations.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.id - Column identifier representing task status.
+ * @param {string} props.title - Display title for the column.
+ * @param {number} props.count - Number of tasks in the column.
+ * @param {React.ReactNode} props.children - Child elements (TaskCards).
+ * @returns {JSX.Element} The rendered droppable column.
+ */
 function DroppableColumn({
   id,
   title,
@@ -230,6 +250,13 @@ function DroppableColumn({
   );
 }
 
+/**
+ * ProjectDetailPage Component.
+ * The detailed view for a single project, featuring a Kanban board for task management.
+ * Handles task CRUD operations, status filtering, and drag-and-drop interactions.
+ *
+ * @returns {JSX.Element} The rendered project details page.
+ */
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
@@ -294,6 +321,11 @@ export default function ProjectDetailPage() {
     }
   }, [currentProject]);
 
+  /**
+   * Validates the task creation/edit form.
+   *
+   * @returns {boolean} True if the form is valid, false otherwise.
+   */
   const validateTaskForm = () => {
     const errors: Record<string, string> = {};
     if (!taskFormData.title?.trim()) {
@@ -303,6 +335,11 @@ export default function ProjectDetailPage() {
     return Object.keys(errors).length === 0;
   };
 
+  /**
+   * Handles updating the project's basic information (name, description).
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleUpdateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
@@ -326,6 +363,11 @@ export default function ProjectDetailPage() {
     }
   };
 
+  /**
+   * Handles creating a new task within the current project.
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   */
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateTaskForm() || !id) return;
@@ -344,6 +386,13 @@ export default function ProjectDetailPage() {
     }
   };
 
+  /**
+   * Performs an optimistic update of a task's status or other fields.
+   * Syncs with the backend and reverts on failure.
+   *
+   * @param {string} taskId - The ID of the task to update.
+   * @param {UpdateTaskRequest} updates - The fields to update.
+   */
   const handleUpdateTaskStatus = async (taskId: string, updates: UpdateTaskRequest) => {
     const task = currentProjectTasks.find((t) => t.id === taskId);
     if (!task) return;
@@ -397,6 +446,9 @@ export default function ProjectDetailPage() {
     }
   };
 
+  /**
+   * Resets the task form to its default state.
+   */
   const resetTaskForm = () => {
     setEditingTask(null);
     setTaskFormData({
@@ -425,6 +477,12 @@ export default function ProjectDetailPage() {
       });
   };
 
+  /**
+   * Filters and returns tasks belonging to a specific status, applying active filters.
+   *
+   * @param {string} status - The status to filter tasks by.
+   * @returns {Task[]} The filtered list of tasks.
+   */
   const getTasksByStatus = (status: string) => {
     let tasks = currentProjectTasks.filter((task) => task.status === status);
     if (statusFilter !== "all") {
@@ -440,6 +498,12 @@ export default function ProjectDetailPage() {
     return tasks;
   };
 
+  /**
+   * Triggered when a drag operation starts.
+   * Sets the active task for the drag overlay.
+   *
+   * @param {DragStartEvent} event - The dnd-kit drag start event.
+   */
   const handleDragStart = (event: DragStartEvent) => {
     const task = currentProjectTasks.find((t) => t.id === event.active.id);
     if (task) {
@@ -447,6 +511,12 @@ export default function ProjectDetailPage() {
     }
   };
 
+  /**
+   * Triggered when a drag operation ends.
+   * Determines the drop target and updates the task's status accordingly.
+   *
+   * @param {DragEndEvent} event - The dnd-kit drag end event.
+   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveTask(null);
