@@ -18,7 +18,7 @@ import {
 import type { Task, CreateTaskRequest, UpdateTaskRequest } from "@/apis/projects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +36,7 @@ import {
   CalendarIcon,
   FilterIcon,
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 const STATUS_COLORS = {
   todo: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
@@ -64,7 +65,7 @@ export default function ProjectDetailPage() {
   );
   const { userDetails } = useSelector((state: RootState) => state.auth);
 
-  const [isTaskSheetOpen, setIsTaskSheetOpen] = useState(false);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskFormData, setTaskFormData] = useState<CreateTaskRequest>({
     title: "",
@@ -76,6 +77,7 @@ export default function ProjectDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [assigneeFilter, setAssigneeFilter] = useState<string>("all");
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -100,7 +102,7 @@ export default function ProjectDetailPage() {
     try {
       await dispatch(createTask({ projectId: id, data: taskFormData })).unwrap();
       toast.success("Task created successfully!");
-      setIsTaskSheetOpen(false);
+      setIsTaskDialogOpen(false);
       resetTaskForm();
     } catch (err: any) {
       toast.error(err?.message || "Failed to create task");
@@ -127,17 +129,18 @@ export default function ProjectDetailPage() {
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    if (!confirm("Are you sure you want to delete this task?")) return;
-
     try {
       await dispatch(deleteTask(taskId)).unwrap();
       toast.success("Task deleted successfully!");
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete task");
+    } finally {
+      setTaskToDelete(null);
     }
   };
 
-  const handleStatusChange = (taskId: string, value: string | null) => {
+  const handleStatusChange = (e: React.MouseEvent | React.FocusEvent, taskId: string, value: string | null) => {
+    e.stopPropagation();
     if (value && id) {
       handleUpdateTask(taskId, { status: value as Task["status"] });
     }
@@ -151,7 +154,7 @@ export default function ProjectDetailPage() {
       priority: task.priority,
       due_date: task.due_date || "",
     });
-    setIsTaskSheetOpen(true);
+    setIsTaskDialogOpen(true);
   };
 
   const resetTaskForm = () => {
@@ -165,8 +168,8 @@ export default function ProjectDetailPage() {
     setTaskFormErrors({});
   };
 
-  const handleCloseSheet = () => {
-    setIsTaskSheetOpen(false);
+  const handleCloseDialog = () => {
+    setIsTaskDialogOpen(false);
     resetTaskForm();
   };
 
@@ -219,7 +222,7 @@ export default function ProjectDetailPage() {
             </>
           )}
         </div>
-        <Button onClick={() => setIsTaskSheetOpen(true)}>
+        <Button onClick={() => setIsTaskDialogOpen(true)}>
           <PlusIcon className="size-4 mr-2" />
           Add Task
         </Button>
@@ -253,7 +256,7 @@ export default function ProjectDetailPage() {
       ) : currentProjectTasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-12 text-center">
           <p className="text-muted-foreground">No tasks yet</p>
-          <Button onClick={() => setIsTaskSheetOpen(true)}>
+          <Button onClick={() => setIsTaskDialogOpen(true)}>
             <PlusIcon className="size-4 mr-2" />
             Create Task
           </Button>
@@ -282,7 +285,7 @@ export default function ProjectDetailPage() {
                         size="icon-sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteTask(task.id);
+                          setTaskToDelete(task.id);
                         }}
                         className="opacity-0 group-hover:opacity-100 transition-opacity -mr-1 -mt-1"
                       >
@@ -308,21 +311,23 @@ export default function ProjectDetailPage() {
                       )}
                     </div>
                     <div className="mt-2 flex items-center gap-2">
-                      <Select
-                        value={task.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(task.id, value)
-                        }
-                      >
-                        <SelectTrigger className="h-6 text-xs w-[100px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="todo">To Do</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
-                          <SelectItem value="done">Done</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Select
+                          value={task.status}
+                          onValueChange={(value) =>
+                            handleStatusChange({ stopPropagation: () => {} } as any, task.id, value)
+                          }
+                        >
+                          <SelectTrigger className="h-6 text-xs w-[100px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="todo">To Do</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="done">Done</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -332,15 +337,15 @@ export default function ProjectDetailPage() {
         </div>
       )}
 
-      <Sheet open={isTaskSheetOpen} onOpenChange={handleCloseSheet}>
-        <SheetContent>
-          <form onSubmit={editingTask ? (e) => { e.preventDefault(); handleUpdateTask(editingTask.id, taskFormData as UpdateTaskRequest); handleCloseSheet(); } : handleCreateTask}>
-            <SheetHeader>
-              <SheetTitle>{editingTask ? "Edit Task" : "Create New Task"}</SheetTitle>
-              <SheetDescription>
+      <Dialog open={isTaskDialogOpen} onOpenChange={handleCloseDialog}>
+        <DialogContent>
+          <form onSubmit={editingTask ? (e) => { e.preventDefault(); handleUpdateTask(editingTask.id, taskFormData as UpdateTaskRequest); handleCloseDialog(); } : handleCreateTask}>
+            <DialogHeader>
+              <DialogTitle>{editingTask ? "Edit Task" : "Create New Task"}</DialogTitle>
+              <DialogDescription>
                 {editingTask ? "Update the task details." : "Add a new task to this project."}
-              </SheetDescription>
-            </SheetHeader>
+              </DialogDescription>
+            </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
                 <FieldLabel htmlFor="title">Title</FieldLabel>
@@ -397,17 +402,25 @@ export default function ProjectDetailPage() {
                 />
               </Field>
             </div>
-            <SheetFooter>
-              <Button type="button" variant="outline" onClick={handleCloseSheet}>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleCloseDialog}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Saving..." : editingTask ? "Save Changes" : "Create Task"}
               </Button>
-            </SheetFooter>
+            </DialogFooter>
           </form>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
+      <ConfirmDialog
+        open={!!taskToDelete}
+        onOpenChange={(open) => !open && setTaskToDelete(null)}
+        title="Delete Task"
+        description="Are you sure you want to delete this task? This action cannot be undone."
+        onConfirm={() => taskToDelete && handleDeleteTask(taskToDelete)}
+        confirmText="Delete Task"
+      />
     </div>
   );
 }

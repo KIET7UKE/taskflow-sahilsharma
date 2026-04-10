@@ -9,21 +9,23 @@ import { fetchProjects, createProject, deleteProject } from "@/redux/slices/proj
 import type { Project } from "@/apis/projects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FolderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function ProjectsPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { projects, isLoading, error } = useSelector((state: RootState) => state.projects);
   const { userDetails } = useSelector((state: RootState) => state.auth);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isCreating, setIsCreating] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -46,7 +48,7 @@ export default function ProjectsPage() {
     try {
       await dispatch(createProject(formData)).unwrap();
       toast.success("Project created successfully!");
-      setIsSheetOpen(false);
+      setIsDialogOpen(false);
       setFormData({ name: "", description: "" });
     } catch (err: any) {
       toast.error(err?.message || "Failed to create project");
@@ -55,15 +57,14 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (e: React.MouseEvent, projectId: string) => {
-    e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this project?")) return;
-
+  const handleDeleteProject = async (projectId: string) => {
     try {
       await dispatch(deleteProject(projectId)).unwrap();
       toast.success("Project deleted successfully!");
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete project");
+    } finally {
+      setProjectToDelete(null);
     }
   };
 
@@ -97,7 +98,7 @@ export default function ProjectsPage() {
             Manage your projects and tasks
           </p>
         </div>
-        <Button onClick={() => setIsSheetOpen(true)}>
+        <Button onClick={() => setIsDialogOpen(true)}>
           <PlusIcon className="size-4 mr-2" />
           New Project
         </Button>
@@ -122,7 +123,7 @@ export default function ProjectsPage() {
               Create your first project to get started
             </p>
           </div>
-          <Button onClick={() => setIsSheetOpen(true)}>
+          <Button onClick={() => setIsDialogOpen(true)}>
             <PlusIcon className="size-4 mr-2" />
             Create Project
           </Button>
@@ -150,7 +151,10 @@ export default function ProjectsPage() {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  onClick={(e) => handleDeleteProject(e, project.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProjectToDelete(project.id);
+                  }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2"
                 >
                   <TrashIcon className="size-4 text-destructive" />
@@ -161,15 +165,15 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
           <form onSubmit={handleCreateProject}>
-            <SheetHeader>
-              <SheetTitle>Create New Project</SheetTitle>
-              <SheetDescription>
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+              <DialogDescription>
                 Add a new project to organize your tasks.
-              </SheetDescription>
-            </SheetHeader>
+              </DialogDescription>
+            </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
                 <FieldLabel htmlFor="name">Project Name</FieldLabel>
@@ -191,17 +195,25 @@ export default function ProjectsPage() {
                 />
               </Field>
             </div>
-            <SheetFooter>
-              <Button type="button" variant="outline" onClick={() => setIsSheetOpen(false)}>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isCreating}>
                 {isCreating ? "Creating..." : "Create Project"}
               </Button>
-            </SheetFooter>
+            </DialogFooter>
           </form>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
+      <ConfirmDialog
+        open={!!projectToDelete}
+        onOpenChange={(open) => !open && setProjectToDelete(null)}
+        title="Delete Project"
+        description="Are you sure you want to delete this project? This will permanently remove all tasks associated with it."
+        onConfirm={() => projectToDelete && handleDeleteProject(projectToDelete)}
+        confirmText="Delete Project"
+      />
     </div>
   );
 }
