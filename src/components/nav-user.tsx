@@ -74,14 +74,14 @@ export function NavUser({
             <EllipsisVerticalIcon className="ml-auto size-4 text-muted-foreground/60" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-64 rounded-xl shadow-xl border-muted/50 p-1.5"
+            className="w-56 rounded-xl shadow-2xl border-muted/50 p-2"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={12}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-3 px-2 py-2.5 text-left text-sm">
+                <div className="flex items-center gap-3 px-2 py-3 text-left">
                   <Avatar className="size-10 rounded-xl border-2 border-primary/5">
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback className="rounded-xl bg-primary/5 text-primary font-bold">
@@ -97,28 +97,13 @@ export function NavUser({
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator className="my-1" />
-            <DropdownMenuGroup className="space-y-0.5">
-              <DropdownMenuItem className="rounded-lg cursor-pointer">
-                <CircleUserRoundIcon className="size-4 mr-2" />
-                <span>Account settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg cursor-pointer">
-                <CreditCardIcon className="size-4 mr-2" />
-                <span>Billing & subscription</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg cursor-pointer">
-                <BellIcon className="size-4 mr-2" />
-                <span>Notification preferences</span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator className="my-1" />
+            <DropdownMenuSeparator className="my-2 bg-primary/5" />
             <DropdownMenuItem 
-              className="rounded-lg cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+              className="rounded-lg h-10 cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground transition-all duration-200"
               onClick={handleLogout}
             >
               <LogOutIcon className="size-4 mr-2" />
-              <span className="font-semibold">Sign out</span>
+              <span className="font-bold tracking-tight">Sign out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
