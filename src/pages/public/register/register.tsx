@@ -120,7 +120,7 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
             </FieldDescription>
           </div>
           <Field>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <FieldLabel htmlFor="name">Name <span className="text-destructive">*</span></FieldLabel>
             <Input
               id="name"
               name="name"
@@ -133,7 +133,7 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
             {errors.name && <FieldError errors={[{ message: errors.name }]} />}
           </Field>
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">Email <span className="text-destructive">*</span></FieldLabel>
             <Input
               id="email"
               name="email"
@@ -146,7 +146,7 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
             {errors.email && <FieldError errors={[{ message: errors.email }]} />}
           </Field>
           <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <FieldLabel htmlFor="password">Password <span className="text-destructive">*</span></FieldLabel>
             <Input
               id="password"
               name="password"
@@ -159,7 +159,7 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
             {errors.password && <FieldError errors={[{ message: errors.password }]} />}
           </Field>
           <Field>
-            <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+            <FieldLabel htmlFor="confirmPassword">Confirm Password <span className="text-destructive">*</span></FieldLabel>
             <Input
               id="confirmPassword"
               name="confirmPassword"

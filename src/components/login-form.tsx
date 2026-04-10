@@ -91,7 +91,7 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
           
           <div className="space-y-4">
             <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email">Email <span className="text-destructive">*</span></FieldLabel>
               <Input
                 id="email"
                 name="email"
@@ -107,7 +107,7 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
             
             <Field>
               <div className="flex items-center justify-between">
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">Password <span className="text-destructive">*</span></FieldLabel>
                 <a href="#" className="text-xs text-primary hover:underline underline-offset-4">
                   Forgot password?
                 </a>

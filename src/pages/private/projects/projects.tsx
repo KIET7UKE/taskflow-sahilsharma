@@ -187,7 +187,7 @@ export default function ProjectsPage() {
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
-                <FieldLabel htmlFor="name">Project Name</FieldLabel>
+                <FieldLabel htmlFor="name">Project Name <span className="text-destructive">*</span></FieldLabel>
                 <Input
                   id="name"
                   value={formData.name}
@@ -197,7 +197,7 @@ export default function ProjectsPage() {
                 {formErrors.name && <FieldError errors={[{ message: formErrors.name }]} />}
               </Field>
               <Field>
-                <FieldLabel htmlFor="description">Description (optional)</FieldLabel>
+                <FieldLabel htmlFor="description">Description <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
                 <Input
                   id="description"
                   value={formData.description}

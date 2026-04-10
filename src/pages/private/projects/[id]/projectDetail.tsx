@@ -83,6 +83,7 @@ export default function ProjectDetailPage() {
   const [assigneeFilter, setAssigneeFilter] = useState<string>("all");
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [projectFormData, setProjectFormData] = useState({ name: "", description: "" });
+  const [projectFormErrors, setProjectFormErrors] = useState<Record<string, string>>({});
   
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
@@ -126,13 +127,19 @@ export default function ProjectDetailPage() {
 
   const handleUpdateProject = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id || !projectFormData.name.trim()) return;
+    if (!id) return;
+
+    if (!projectFormData.name.trim()) {
+      setProjectFormErrors({ name: "Project name is required" });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       await dispatch(updateProject({ id, data: projectFormData })).unwrap();
       toast.success("Project updated successfully!");
       setIsProjectDialogOpen(false);
+      setProjectFormErrors({});
     } catch (err: any) {
       toast.error(err?.message || "Failed to update project");
     } finally {
@@ -440,17 +447,21 @@ export default function ProjectDetailPage() {
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
-                <FieldLabel htmlFor="projectName">Name</FieldLabel>
+                <FieldLabel htmlFor="projectName">Name <span className="text-destructive">*</span></FieldLabel>
                 <Input
                   id="projectName"
                   value={projectFormData.name}
-                  onChange={(e) =>
-                    setProjectFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    setProjectFormData((prev) => ({ ...prev, name: e.target.value }));
+                    if (projectFormErrors.name) setProjectFormErrors({});
+                  }}
                 />
+                {projectFormErrors.name && (
+                  <FieldError errors={[{ message: projectFormErrors.name }]} />
+                )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="projectDescription">Description</FieldLabel>
+                <FieldLabel htmlFor="projectDescription">Description <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
                 <Input
                   id="projectDescription"
                   value={projectFormData.description}
@@ -483,7 +494,7 @@ export default function ProjectDetailPage() {
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
-                <FieldLabel htmlFor="title">Title</FieldLabel>
+                <FieldLabel htmlFor="title">Title <span className="text-destructive">*</span></FieldLabel>
                 <Input
                   id="title"
                   value={taskFormData.title}
@@ -497,7 +508,7 @@ export default function ProjectDetailPage() {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="description">Description</FieldLabel>
+                <FieldLabel htmlFor="description">Description <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
                 <Input
                   id="description"
                   value={taskFormData.description}
@@ -508,7 +519,7 @@ export default function ProjectDetailPage() {
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="priority">Priority</FieldLabel>
+                <FieldLabel htmlFor="priority">Priority <span className="text-destructive">*</span></FieldLabel>
                 <Select
                   value={taskFormData.priority}
                   onValueChange={(value) =>
@@ -526,7 +537,7 @@ export default function ProjectDetailPage() {
                 </Select>
               </Field>
               <Field>
-                <FieldLabel htmlFor="due_date">Due Date</FieldLabel>
+                <FieldLabel htmlFor="due_date">Due Date <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
                 <Input
                   id="due_date"
                   type="date"
