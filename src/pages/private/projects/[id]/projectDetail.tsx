@@ -549,35 +549,35 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1">
           {isLoading ? (
             <>
-              <Skeleton className="h-8 w-48 mb-1" />
-              <Skeleton className="h-4 w-96" />
+              <Skeleton className="h-6 w-32 mb-1" />
+              <Skeleton className="h-4 w-48 md:w-72" />
             </>
           ) : (
             <>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold">{currentProject?.name}</h1>
+                <h1 className="text-xl md:text-2xl font-bold">{currentProject?.name}</h1>
                 <Button variant="ghost" size="icon-sm" onClick={() => setIsProjectDialogOpen(true)}>
                   <Edit2Icon className="size-4 text-muted-foreground" />
                 </Button>
               </div>
               {currentProject?.description && (
-                <p className="text-muted-foreground">{currentProject.description}</p>
+                <p className="text-sm md:text-base text-muted-foreground line-clamp-1">{currentProject.description}</p>
               )}
             </>
           )}
         </div>
-        <Button onClick={() => setIsTaskDialogOpen(true)}>
+        <Button onClick={() => setIsTaskDialogOpen(true)} className="w-full sm:w-auto">
           <PlusIcon className="size-4 mr-2" />
           Add Task
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 pl-1">
             Status
@@ -649,8 +649,9 @@ export default function ProjectDetailPage() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {TASKS_COLUMNS.map((column) => {
+          <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
+            <div className="min-w-[768px] md:min-w-0 grid grid-cols-3 gap-4">
+              {TASKS_COLUMNS.map((column) => {
               const columnTasks = getTasksByStatus(column.key);
               return (
                 <DroppableColumn
@@ -676,6 +677,7 @@ export default function ProjectDetailPage() {
                 </DroppableColumn>
               );
             })}
+          </div>
           </div>
           <DragOverlay>
             {activeTask && (

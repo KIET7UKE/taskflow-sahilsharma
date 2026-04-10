@@ -152,22 +152,22 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-xl md:text-2xl font-bold">Projects</h1>
+          <p className="text-sm text-muted-foreground">
             Manage your projects and tasks
           </p>
         </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button onClick={() => setIsDialogOpen(true)} className="w-full sm:w-auto">
           <PlusIcon className="size-4 mr-2" />
           New Project
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="rounded-lg border bg-card p-6">
               <Skeleton className="h-5 w-2/3 mb-2" />
@@ -192,7 +192,7 @@ export default function ProjectsPage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {paginatedProjects.map((project) => (
             <div
               key={project.id}
