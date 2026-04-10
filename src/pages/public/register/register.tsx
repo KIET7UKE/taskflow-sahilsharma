@@ -177,7 +177,7 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="confirmPassword" className="text-sm font-medium">Confirm</FieldLabel>
+                <FieldLabel htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</FieldLabel>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
