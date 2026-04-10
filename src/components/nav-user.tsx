@@ -80,54 +80,33 @@ export function NavUser({
             <ChevronsUpDownIcon className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--anchor-width) min-w-56 rounded-lg"
+            className="w-(--anchor-width) min-w-56 rounded-xl shadow-2xl border-muted/50 p-2"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="h-8 w-8 rounded-lg">
+                <div className="flex items-center gap-3 px-2 py-3 text-left">
+                  <Avatar className="h-9 w-9 rounded-xl border-2 border-primary/5">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">{userInitials}</AvatarFallback>
+                    <AvatarFallback className="rounded-xl bg-primary/5 text-primary font-bold">{userInitials}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate font-bold text-foreground">{user.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">{user.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <SparklesIcon />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheckIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="my-2 bg-primary/5" />
             <DropdownMenuItem 
-              className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer font-bold"
+              variant="destructive"
+              className="rounded-lg h-11 cursor-pointer font-bold transition-all duration-200 focus:bg-destructive focus:text-white"
               onClick={handleLogout}
             >
-              <LogOutIcon />
-              Log out
+              <LogOutIcon className="size-4 mr-2 text-inherit" />
+              <span className="tracking-tight text-inherit">Sign out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
