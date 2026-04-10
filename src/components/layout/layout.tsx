@@ -1,14 +1,21 @@
+import { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { fetchProjects } from "@/redux/slices/projects/projectsSlice"
+import type { AppDispatch } from "@/redux/store/store"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
     SidebarInset,
     SidebarProvider,
-    SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Separator } from "../ui/separator"
-
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        dispatch(fetchProjects());
+    }, [dispatch]);
+
     return (
         <SidebarProvider
             style={
