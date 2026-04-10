@@ -28,8 +28,8 @@ export interface UserDetails {
 
 export const authApi = {
   login: (data: LoginRequest) =>
-    postAPI<AuthResponse>("/api/auth/login", data),
+    postAPI<AuthResponse>("/auth/login", data),
 
   register: (data: RegisterRequest) =>
-    postAPI<AuthResponse>("/api/auth/register", data),
+    postAPI<AuthResponse>("/auth/register", data),
 };

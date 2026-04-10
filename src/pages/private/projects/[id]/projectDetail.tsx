@@ -12,6 +12,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  updateProject,
 } from "@/redux/thunks/projectThunks";
 import {
   optimisticUpdateTask,
@@ -37,6 +38,7 @@ import {
   TrashIcon,
   CalendarIcon,
   FilterIcon,
+  Edit2Icon,
 } from "lucide-react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { cn } from "@/lib/utils";
@@ -80,13 +82,39 @@ export default function ProjectDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [assigneeFilter, setAssigneeFilter] = useState<string>("all");
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+  const [projectFormData, setProjectFormData] = useState({ name: "", description: "" });
+  
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       dispatch(fetchProjectById(id));
+      // Initially fetch tasks without filters
+      dispatch(fetchTasks({ projectId: id }));
     }
   }, [id, dispatch]);
+
+  useEffect(() => {
+    if (id && (statusFilter !== "all" || assigneeFilter !== "all")) {
+      dispatch(fetchTasks({ 
+        projectId: id, 
+        status: statusFilter === "all" ? undefined : statusFilter,
+        assignee: assigneeFilter === "all" ? undefined : assigneeFilter
+      }));
+    } else if (id && statusFilter === "all" && assigneeFilter === "all") {
+      dispatch(fetchTasks({ projectId: id }));
+    }
+  }, [id, statusFilter, assigneeFilter, dispatch]);
+
+  useEffect(() => {
+    if (currentProject) {
+      setProjectFormData({
+        name: currentProject.name,
+        description: currentProject.description || "",
+      });
+    }
+  }, [currentProject]);
 
   const validateTaskForm = () => {
     const errors: Record<string, string> = {};
@@ -95,6 +123,22 @@ export default function ProjectDetailPage() {
     }
     setTaskFormErrors(errors);
     return Object.keys(errors).length === 0;
+  };
+
+  const handleUpdateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id || !projectFormData.name.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await dispatch(updateProject({ id, data: projectFormData })).unwrap();
+      toast.success("Project updated successfully!");
+      setIsProjectDialogOpen(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update project");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
@@ -176,11 +220,7 @@ export default function ProjectDetailPage() {
     resetTaskForm();
   };
 
-  const filteredTasks = currentProjectTasks.filter((task) => {
-    if (statusFilter !== "all" && task.status !== statusFilter) return false;
-    if (assigneeFilter !== "all" && task.assignee_id !== assigneeFilter) return false;
-    return true;
-  });
+  const filteredTasks = currentProjectTasks;
 
   const getTasksByStatus = (status: string) => {
     return filteredTasks.filter((task) => task.status === status);
@@ -215,7 +255,12 @@ export default function ProjectDetailPage() {
             </>
           ) : (
             <>
-              <h1 className="text-2xl font-bold">{currentProject?.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">{currentProject?.name}</h1>
+                <Button variant="ghost" size="icon-sm" onClick={() => setIsProjectDialogOpen(true)}>
+                  <Edit2Icon className="size-4 text-muted-foreground" />
+                </Button>
+              </div>
               {currentProject?.description && (
                 <p className="text-muted-foreground">{currentProject.description}</p>
               )}
@@ -350,6 +395,49 @@ export default function ProjectDetailPage() {
           ))}
         </div>
       )}
+
+      <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
+        <DialogContent>
+          <form onSubmit={handleUpdateProject}>
+            <DialogHeader>
+              <DialogTitle>Edit Project</DialogTitle>
+              <DialogDescription>
+                Update your project's name and description.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 py-4">
+              <Field>
+                <FieldLabel htmlFor="projectName">Name</FieldLabel>
+                <Input
+                  id="projectName"
+                  value={projectFormData.name}
+                  onChange={(e) =>
+                    setProjectFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="projectDescription">Description</FieldLabel>
+                <Input
+                  id="projectDescription"
+                  value={projectFormData.description}
+                  onChange={(e) =>
+                    setProjectFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
+                />
+              </Field>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsProjectDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isTaskDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent>

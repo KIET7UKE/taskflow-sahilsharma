@@ -67,7 +67,7 @@ let projectList = [...projects];
 
 export const handlers = [
   // Auth handlers
-  http.post("/api/auth/register", async ({ request }) => {
+  http.post("/auth/register", async ({ request }) => {
     const body = await request.json() as { name?: string; email?: string; password?: string };
     
     if (!body.email || !body.password || !body.name) {
@@ -103,7 +103,7 @@ export const handlers = [
     );
   }),
 
-  http.post("/api/auth/login", async ({ request }) => {
+  http.post("/auth/login", async ({ request }) => {
     const body = await request.json() as { email?: string; password?: string };
     
     if (!body.email || !body.password) {
@@ -131,7 +131,7 @@ export const handlers = [
   }),
 
   // Stats handler
-  http.get("/api/stats", () => {
+  http.get("/stats", () => {
     return HttpResponse.json({
       totalProjects: projectList.length,
       totalTasks: projectTasks.length,
@@ -140,13 +140,13 @@ export const handlers = [
   }),
 
   // Projects handlers
-  http.get("/api/projects", () => {
+  http.get("/projects", () => {
     return HttpResponse.json({
       projects: projectList,
     });
   }),
 
-  http.post("/api/projects", async ({ request }) => {
+  http.post("/projects", async ({ request }) => {
     const body = await request.json() as { name?: string; description?: string };
     
     if (!body.name) {
@@ -168,7 +168,7 @@ export const handlers = [
     return HttpResponse.json(newProject, { status: 201 });
   }),
 
-  http.get("/api/projects/:id", ({ params }) => {
+  http.get("/projects/:id", ({ params }) => {
     const project = projectList.find((p) => p.id === params.id);
     
     if (!project) {
@@ -183,7 +183,7 @@ export const handlers = [
     });
   }),
 
-  http.patch("/api/projects/:id", async ({ request, params }) => {
+  http.patch("/projects/:id", async ({ request, params }) => {
     const body = await request.json() as { name?: string; description?: string };
     const projectIndex = projectList.findIndex((p) => p.id === params.id);
     
@@ -201,7 +201,7 @@ export const handlers = [
     return HttpResponse.json(projectList[projectIndex]);
   }),
 
-  http.delete("/api/projects/:id", ({ params }) => {
+  http.delete("/projects/:id", ({ params }) => {
     const projectIndex = projectList.findIndex((p) => p.id === params.id);
     
     if (projectIndex === -1) {
@@ -215,7 +215,7 @@ export const handlers = [
   }),
 
   // Tasks handlers
-  http.get("/api/projects/:id/tasks", ({ params, request }) => {
+  http.get("/projects/:id/tasks", ({ params, request }) => {
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
     const assignee = url.searchParams.get("assignee");
@@ -232,7 +232,7 @@ export const handlers = [
     return HttpResponse.json({ tasks: filteredTasks });
   }),
 
-  http.post("/api/projects/:id/tasks", async ({ request, params }) => {
+  http.post("/projects/:id/tasks", async ({ request, params }) => {
     const body = await request.json() as {
       title?: string;
       description?: string;
@@ -265,7 +265,7 @@ export const handlers = [
     return HttpResponse.json(newTask, { status: 201 });
   }),
 
-  http.patch("/api/tasks/:id", async ({ request, params }) => {
+  http.patch("/tasks/:id", async ({ request, params }) => {
     const body = await request.json() as {
       title?: string;
       description?: string;
@@ -291,7 +291,7 @@ export const handlers = [
     return HttpResponse.json(updatedTask);
   }),
 
-  http.delete("/api/tasks/:id", ({ params }) => {
+  http.delete("/tasks/:id", ({ params }) => {
     const taskIndex = projectTasks.findIndex((t) => t.id === params.id);
     
     if (taskIndex === -1) {

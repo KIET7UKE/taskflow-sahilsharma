@@ -52,30 +52,30 @@ interface ProjectsResponse {
 }
 
 export const projectsApi = {
-  list: () => getAPI<ProjectsResponse>("/api/projects"),
+  list: () => getAPI<ProjectsResponse>("/projects"),
 
-  getById: (id: string) => getAPI<ProjectWithTasks>(`/api/projects/${id}`),
+  getById: (id: string) => getAPI<ProjectWithTasks>(`/projects/${id}`),
 
   create: (data: CreateProjectRequest) =>
-    postAPI<Project>("/api/projects", data),
+    postAPI<Project>("/projects", data),
 
   update: (id: string, data: Partial<CreateProjectRequest>) =>
-    patchAPI<Project>(`/api/projects/${id}`, data),
+    patchAPI<Project>(`/projects/${id}`, data),
 
-  delete: (id: string) => deleteAPI<void>(`/api/projects/${id}`),
+  delete: (id: string) => deleteAPI<void>(`/projects/${id}`),
 
-  fetchStats: () => getAPI<{ totalProjects: number; totalTasks: number; completedTasks: number }>("/api/stats"),
+  fetchStats: () => getAPI<{ totalProjects: number; totalTasks: number; completedTasks: number }>("/stats"),
 };
 
 export const tasksApi = {
   list: (projectId: string, params?: { status?: string; assignee?: string }) =>
-    getAPI<{ tasks: Task[] }>(`/api/projects/${projectId}/tasks`, params),
+    getAPI<{ tasks: Task[] }>(`/projects/${projectId}/tasks`, params),
 
   create: (projectId: string, data: CreateTaskRequest) =>
-    postAPI<Task>(`/api/projects/${projectId}/tasks`, data),
+    postAPI<Task>(`/projects/${projectId}/tasks`, data),
 
   update: (taskId: string, data: UpdateTaskRequest) =>
-    patchAPI<Task>(`/api/tasks/${taskId}`, data),
+    patchAPI<Task>(`/tasks/${taskId}`, data),
 
-  delete: (taskId: string) => deleteAPI<void>(`/api/tasks/${taskId}`),
+  delete: (taskId: string) => deleteAPI<void>(`/tasks/${taskId}`),
 };
