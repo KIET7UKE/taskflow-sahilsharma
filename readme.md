@@ -20,6 +20,7 @@ TaskFlow is a high-performance, premium task management system built with the la
 - **🌓 Dynamic Theming**: Persistent Light/Dark mode with system synchronization and a smooth glassmorphic aesthetic.
 - **⚡ Optimistic UI**: Instant UI updates on task changes with background synchronization and automatic rollback on failure.
 - **🔍 Advanced Filtering**: Filter tasks by status, priority, or assignee to stay focused on what matters.
+- **📑 Sophisticated Pagination**: Custom-built pagination system and `usePagination` hook for managing large datasets across grid and list views.
 
 ---
 
@@ -49,8 +50,8 @@ By intercepting network requests at the service worker level, we enable a **Fron
 ```text
 src/
 ├── apis/              # Typed API client (Axios) & Endpoint definitions
-├── components/        # Reusable UI & Layout components (shadcn/ui)
-├── hooks/             # Shared React hooks (useAppDispatch, useTheme)
+├── components/        # Reusable UI & Layout components (shadcn/ui + pagination)
+├── hooks/             # Shared React hooks (usePagination, useAppDispatch, useTheme)
 ├── lib/               # Utility libraries (cn, validators)
 ├── mocks/             # MSW Handlers & Browser worker setup
 ├── pages/             # Route-level components (Public & Private)
