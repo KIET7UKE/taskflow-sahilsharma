@@ -5,7 +5,6 @@ import { useSelector } from "react-redux"
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -26,13 +25,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       email: userDetails?.email || "",
       avatar: "",
     },
-    teams: [
-      {
-        name: "TaskFlow",
-        logo: <GalleryVerticalEndIcon />,
-        plan: "Enterprise",
-      },
-    ],
     navMain: [
       {
         title: "Dashboard",
@@ -56,7 +48,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className="flex items-center gap-2 px-2 py-4">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <GalleryVerticalEndIcon className="size-5" />
+          </div>
+          <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+            <span className="font-bold text-sm tracking-tight">TaskFlow</span>
+            <span className="text-[10px] text-muted-foreground font-medium">Enterprise</span>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
