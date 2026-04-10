@@ -80,12 +80,14 @@ Since this is a frontend-only submission, the app uses MSW to mock all API endpo
 
 ### Base URL
 ```
-http://localhost:5173 (dev) or http://localhost:3000 (production mock)
+http://localhost:4000 (proxied via MSW in both dev and production)
 ```
+
+> **Note:** MSW intercepts requests at the base URL — there is no `/api/` prefix in the actual handler paths.
 
 ### Auth Endpoints
 
-**POST `/api/auth/register`**
+**POST `/auth/register`**
 ```json
 // Request
 { "name": "Jane Doe", "email": "jane@example.com", "password": "secret123" }
@@ -94,7 +96,7 @@ http://localhost:5173 (dev) or http://localhost:3000 (production mock)
 { "token": "<jwt>", "user": { "id": "uuid", "name": "Jane Doe", "email": "jane@example.com" } }
 ```
 
-**POST `/api/auth/login`**
+**POST `/auth/login`**
 ```json
 // Request
 { "email": "jane@example.com", "password": "secret123" }
@@ -105,13 +107,13 @@ http://localhost:5173 (dev) or http://localhost:3000 (production mock)
 
 ### Projects Endpoints
 
-**GET `/api/projects`** - List user's projects
+**GET `/projects`** - List user's projects
 ```json
 // Response 200
 { "projects": [{ "id": "uuid", "name": "Project", "description": "...", "owner_id": "uuid", "created_at": "..." }] }
 ```
 
-**POST `/api/projects`** - Create project
+**POST `/projects`** - Create project
 ```json
 // Request
 { "name": "New Project", "description": "Optional" }
@@ -120,24 +122,24 @@ http://localhost:5173 (dev) or http://localhost:3000 (production mock)
 { "id": "uuid", "name": "New Project", "description": "...", "owner_id": "uuid", "created_at": "..." }
 ```
 
-**GET `/api/projects/:id`** - Get project with tasks
+**GET `/projects/:id`** - Get project with tasks
 ```json
 // Response 200
 { "id": "uuid", "name": "Project", ..., "tasks": [...] }
 ```
 
-**PATCH `/api/projects/:id`** - Update project
-**DELETE `/api/projects/:id`** - Delete project (204)
+**PATCH `/projects/:id`** - Update project
+**DELETE `/projects/:id`** - Delete project (204)
 
 ### Tasks Endpoints
 
-**GET `/api/projects/:id/tasks?status=&assignee=`** - List tasks with optional filters
+**GET `/projects/:id/tasks?status=&assignee=`** - List tasks with optional filters
 ```json
 // Response 200
 { "tasks": [...] }
 ```
 
-**POST `/api/projects/:id/tasks`** - Create task
+**POST `/projects/:id/tasks`** - Create task
 ```json
 // Request
 { "title": "Task", "description": "...", "priority": "high", "assignee_id": "uuid", "due_date": "2026-04-15" }
@@ -146,7 +148,7 @@ http://localhost:5173 (dev) or http://localhost:3000 (production mock)
 { "id": "uuid", "title": "Task", "status": "todo", "priority": "high", ... }
 ```
 
-**PATCH `/api/tasks/:id`** - Update task
+**PATCH `/tasks/:id`** - Update task
 ```json
 // Request
 { "title": "...", "status": "done", "priority": "low", ... }
@@ -155,7 +157,7 @@ http://localhost:5173 (dev) or http://localhost:3000 (production mock)
 { "id": "uuid", "title": "...", "status": "done", ... }
 ```
 
-**DELETE `/api/tasks/:id`** - Delete task (204)
+**DELETE `/tasks/:id`** - Delete task (204)
 
 ### Error Responses
 

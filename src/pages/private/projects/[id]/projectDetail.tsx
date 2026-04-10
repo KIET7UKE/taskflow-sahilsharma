@@ -1,4 +1,3 @@
-"use client";
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -273,7 +272,7 @@ export default function ProjectDetailPage() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <FilterIcon className="size-4 text-muted-foreground" />
         <Select value={statusFilter} onValueChange={(value) => value && setStatusFilter(value)}>
           <SelectTrigger className="w-[150px]">
@@ -286,6 +285,27 @@ export default function ProjectDetailPage() {
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={assigneeFilter} onValueChange={(value) => value && setAssigneeFilter(value)}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Assignee" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Assignees</SelectItem>
+            <SelectItem value={userDetails?.id ?? ""}>
+              {userDetails?.name ?? "Me"}
+            </SelectItem>
+            <SelectItem value="unassigned">Unassigned</SelectItem>
+          </SelectContent>
+        </Select>
+        {(statusFilter !== "all" || assigneeFilter !== "all") && (
+          <button
+            type="button"
+            onClick={() => { setStatusFilter("all"); setAssigneeFilter("all"); }}
+            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       {isLoading ? (
