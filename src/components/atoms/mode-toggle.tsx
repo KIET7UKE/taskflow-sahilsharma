@@ -1,11 +1,11 @@
+
 import { MoonIcon, SunIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/components/theme-provider"
+import { useTheme } from "@/components/atoms/theme-provider"
 
 /**
- * ModeToggle Component.
- * Provides a button to toggle between light and dark themes.
- * Icons switch based on the current theme state.
+ * ModeToggle Atom.
+ * A simple button to toggle between light and dark themes.
  *
  * @returns {JSX.Element} The theme toggle button.
  */

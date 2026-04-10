@@ -1,7 +1,5 @@
 
-
 import * as React from "react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +18,13 @@ import {
 } from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react"
 
+/**
+ * TeamSwitcher Molecule.
+ * Allows users to switch between different team contexts.
+ *
+ * @param {Object} props - Component props.
+ * @returns {JSX.Element} The rendered TeamSwitcher molecule.
+ */
 export function TeamSwitcher({
   teams,
 }: {
@@ -31,9 +36,11 @@ export function TeamSwitcher({
 }) {
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  
   if (!activeTeam) {
     return null
   }
+  
   return (
     <SidebarMenu>
       <SidebarMenuItem>

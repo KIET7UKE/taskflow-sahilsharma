@@ -1,10 +1,9 @@
 
-
 import * as React from "react"
 import { useSelector } from "react-redux"
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/molecules/nav-main"
+import { NavProjects } from "@/components/molecules/nav-projects"
+import { NavUser } from "@/components/molecules/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -12,17 +11,15 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { GalleryVerticalEndIcon, LayoutDashboardIcon, FolderIcon, PlusIcon } from "lucide-react"
+import { GalleryVerticalEndIcon, LayoutDashboardIcon, FolderIcon } from "lucide-react"
 import type { RootState } from "@/redux/reducers/rootReducer"
 
 /**
- * AppSidebar Component.
- * The primary navigation sidebar for the application.
- * Contains the main navigation links, project list, and user profile section.
- * Responsive and collapsible.
+ * AppSidebar Organism.
+ * The primary navigation sidebar organism that assembles multiple molecules.
  *
  * @param {React.ComponentProps<typeof Sidebar>} props - Standard Sidebar props.
- * @returns {JSX.Element} The rendered Sidebar.
+ * @returns {JSX.Element} The rendered Sidebar organism.
  */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { userDetails } = useSelector((state: RootState) => state.auth);

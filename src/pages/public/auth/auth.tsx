@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { LoginForm } from "@/components/login-form";
 import { RegisterForm } from "@/pages/public/register/register";
+import { LoginForm } from "@/components/organisms/login-form";
 
 export default function AuthPage() {
   const [showRegister, setShowRegister] = useState(false);

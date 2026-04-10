@@ -7,7 +7,7 @@ import App from "./App.tsx";
 import { initializeAuthenticationState } from "./redux/slices/auth/authSlice.ts";
 import store from "./redux/store/store";
 import { worker } from "./mocks/browser";
-import { ThemeProvider } from "./components/theme-provider";
+import { ThemeProvider } from "./components/atoms/theme-provider";
 
 store.dispatch(initializeAuthenticationState());
 

@@ -14,7 +14,7 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FolderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
 
 /**
  * ProjectsPage Component.

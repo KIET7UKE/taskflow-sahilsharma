@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom"
 import {
   DropdownMenu,
@@ -15,21 +16,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { MoreHorizontalIcon, FolderIcon, ArrowRightIcon, Trash2Icon } from "lucide-react"
-
-import { useDispatch } from "react-redux"
-import { deleteProject } from "@/redux/thunks/projectThunks"
-import { toast } from "sonner"
-import { useNavigate } from "react-router-dom"
-import { AppDispatch } from "@/redux/store/store"
+import { MoreHorizontalIcon, FolderIcon, Trash2Icon } from "lucide-react"
+import { useProjects } from "@/hooks/use-projects"
 
 /**
- * NavProjects Component.
- * Renders a list of projects in the sidebar with actions for viewing and deleting.
+ * NavProjects Molecule.
+ * Renders a list of projects with management actions.
  *
  * @param {Object} props - Component props.
- * @param {Array} props.projects - List of project objects.
- * @returns {JSX.Element} The rendered projects menu.
+ * @returns {JSX.Element} The rendered NavProjects molecule.
  */
 export function NavProjects({
   projects,
@@ -42,27 +37,7 @@ export function NavProjects({
   }[]
 }) {
   const { isMobile } = useSidebar()
-  const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
-
-  /**
-   * Handles the deletion of a project.
-   * Prompts for confirmation before dispatching the delete action.
-   *
-   * @param {string} id - The unique identifier of the project to delete.
-   * @param {string} name - The display name of the project for confirmation.
-   */
-  const handleDelete = async (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete "${name}"?`)) {
-      try {
-        await dispatch(deleteProject(id)).unwrap()
-        toast.success("Project deleted successfully")
-        navigate("/dashboard")
-      } catch (error) {
-        toast.error("Failed to delete project")
-      }
-    }
-  }
+  const { handleDeleteProject } = useProjects()
 
   return (
     <SidebarGroup>
@@ -100,7 +75,7 @@ export function NavProjects({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
-                  onClick={() => handleDelete(item.id, item.name)}
+                  onClick={() => handleDeleteProject(item.id, item.name)}
                 >
                   <Trash2Icon className="mr-2" />
                   <span>Delete Project</span>

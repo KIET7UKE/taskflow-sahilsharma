@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom"
 import {
   Collapsible,
@@ -17,13 +18,11 @@ import {
 import { ChevronRightIcon } from "lucide-react"
 
 /**
- * NavMain Component.
- * Renders the main platform navigation items in the sidebar.
- * Supports collapsible sub-menus and tooltips for icon-only states.
+ * NavMain Molecule.
+ * Renders the primary sidebar navigation group.
  *
  * @param {Object} props - Component props.
- * @param {Array} props.items - List of navigation items with optional sub-items.
- * @returns {JSX.Element} The rendered main navigation menu.
+ * @returns {JSX.Element} The rendered NavMain molecule.
  */
 export function NavMain({
   items,

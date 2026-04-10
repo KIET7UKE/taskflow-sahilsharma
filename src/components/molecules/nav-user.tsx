@@ -1,15 +1,9 @@
+
 import {
-  BellIcon,
   ChevronsUpDownIcon,
-  CreditCardIcon,
   LogOutIcon,
-  SparklesIcon,
-  BadgeCheckIcon,
 } from "lucide-react"
-import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import { logout } from "@/redux/slices/auth/authSlice"
-import { toast } from "sonner"
+import { useAuth } from "@/hooks/use-auth"
 import {
   Avatar,
   AvatarFallback,
@@ -32,13 +26,12 @@ import {
 } from "@/components/ui/sidebar"
 
 /**
- * NavUser Component.
- * Displays the current user's profile information in the sidebar footer.
- * Provides a dropdown menu with account details and a sign-out action.
+ * NavUser Molecule.
+ * Displays user profile and providing access to account actions.
  *
  * @param {Object} props - Component props.
- * @param {Object} props.user - The user object containing name, email, and avatar.
- * @returns {JSX.Element} The rendered user profile navigation.
+ * @param {Object} props.user - The user object.
+ * @returns {JSX.Element} The rendered NavUser molecule.
  */
 export function NavUser({
   user,
@@ -50,19 +43,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  /**
-   * Logs out the current user.
-   * Dispatches the logout action, clears the local storage token, and redirects to the home page.
-   */
-  const handleLogout = () => {
-    dispatch(logout())
-    localStorage.removeItem("token")
-    toast.success("Logged out successfully")
-    navigate("/")
-  }
+  const { handleLogout } = useAuth()
 
   const userInitials = user.name
     .split(" ")

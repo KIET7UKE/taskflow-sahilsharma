@@ -12,9 +12,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { ModeToggle } from "@/components/atoms/mode-toggle";
 
-import { ModeToggle } from "@/components/mode-toggle";
-
+/**
+ * SiteHeader Organism.
+ * The top header navigation organism that provides breadcrumbs and global actions.
+ *
+ * @returns {JSX.Element} The rendered SiteHeader.
+ */
 export function SiteHeader() {
   const location = useLocation();
   const { userDetails } = useSelector((state: RootState) => state.auth);
@@ -23,7 +28,7 @@ export function SiteHeader() {
   const pathnames = location.pathname.split("/").filter((x) => x);
 
   return (
-    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator
