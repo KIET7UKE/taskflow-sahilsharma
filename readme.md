@@ -1,239 +1,117 @@
-# TaskFlow
+# 🚀 TaskFlow
 
-A minimal but real task management system built with React. Users can register, log in, create projects, add tasks to those projects, and manage their status.
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite)](https://vitejs.dev/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![Redux](https://img.shields.io/badge/Redux-Toolkit-764ABC?logo=redux)](https://redux-toolkit.js.org/)
+[![Status](https://img.shields.io/badge/Status-Beta-orange)](#)
 
-**Frontend-only submission** - This frontend is built to work with a mock API (MSW) for development. See [Mock API Spec](#mock-api-spec) for the API contract.
+TaskFlow is a high-performance, premium task management system built with the latest React 19 ecosystem. It features a sophisticated Kanban-style workflow, real-time-like interactions via optimistic updates, and a glassmorphic dark-mode interface designed for professional productivity.
 
-## Tech Stack
+---
 
-- **React 19** with TypeScript
-- **Vite** for build tooling
-- **Tailwind CSS 4** for styling
-- **shadcn/ui** (base-ui) for components
-- **Redux Toolkit** for state management
-- **React Router v7** for routing
-- **MSW (Mock Service Worker)** for API mocking
-- **Docker** for containerization
+## ✨ Features
 
-## Architecture Decisions
+- **🔐 Robust Auth System**: Secure login and registration with JWT-based session persistence and Google OAuth integration.
+- **📊 Interactive Dashboard**: High-level overview of project health, task completion rates, and active workloads.
+- **📋 Kanban Workflow**: Seamless drag-and-drop task management powered by `@dnd-kit`, sorted by `To Do`, `In Progress`, and `Done`.
+- **🏗️ Project Management**: Full CRUD capabilities for projects with rich descriptions and metadata.
+- **🌓 Dynamic Theming**: Persistent Light/Dark mode with system synchronization and a smooth glassmorphic aesthetic.
+- **⚡ Optimistic UI**: Instant UI updates on task changes with background synchronization and automatic rollback on failure.
+- **🔍 Advanced Filtering**: Filter tasks by status, priority, or assignee to stay focused on what matters.
 
-### Why these choices?
+---
 
-- **React 19 + TypeScript**: Provides excellent DX with type safety
-- **Tailwind CSS 4**: Utility-first CSS with excellent iteration speed
-- **shadcn/ui (base-ui)**: Headless components that integrate well with Tailwind
-- **Redux Toolkit**: Standardized state management with async thunk support
-- **MSW for mocking**: Intercepts network requests, providing realistic API behavior during development
+## 🏗️ Architecture Reasoning
 
-### What was intentionally left out?
+TaskFlow was built with a "Production-First" mindset, choosing technologies that scale:
 
-- **Backend**: This is a frontend-only submission. MSW handles API mocking.
-- **Real authentication**: JWT handling is mocked; production would need a real backend
-- **Drag-and-drop**: Kanban board uses click-to-change-status instead of D&D for simplicity
-- **Dark mode**: Theme toggle was not implemented to stay within scope
-- **Real-time updates**: WebSocket/SSE not implemented (requires backend support)
+### ⚙️ Core React 19 + TypeScript
+Leveraging the latest features of React 19 for better performance and future-proofing, combined with strict TypeScript 6.0 for enterprise-grade reliability and developer experience.
 
-## Running Locally
+### 🧠 Redux Toolkit (Slices & Thunks)
+State is managed centrally using Redux Toolkit. We use **Async Thunks** for all side effects (API calls) and **Slices** for clean, modular state logic, ensuring a single source of truth that is easy to debug.
 
-### Prerequisites
-- Docker and Docker Compose installed
-- Node.js 20+ (for local development without Docker)
+### 🎨 Tailwind CSS v4 & shadcn/ui
+We utilize the cutting-edge Tailwind CSS v4 for ultra-fast styling and **shadcn/ui** (Base UI) for accessible, standard-compliant components. The design follows a custom design system with vibrant gradients and subtle micro-animations.
+
+### 🔄 DND-Kit Integration
+The Kanban board isn't just a list; it's a fully droppable interface. `@dnd-kit` was chosen over simpler alternatives for its accessibility features and performance with large datasets.
+
+### 🛠️ MSW (Mock Service Worker)
+By intercepting network requests at the service worker level, we enable a **Frontend-First** development workflow. This ensures the app behaves identically to one with a real backend, facilitating seamless integration later.
+
+---
+
+## 📂 Project Structure
+
+```text
+src/
+├── apis/              # Typed API client (Axios) & Endpoint definitions
+├── components/        # Reusable UI & Layout components (shadcn/ui)
+├── hooks/             # Shared React hooks (useAppDispatch, useTheme)
+├── lib/               # Utility libraries (cn, validators)
+├── mocks/             # MSW Handlers & Browser worker setup
+├── pages/             # Route-level components (Public & Private)
+├── redux/             # Redux Store, Slices, and Async Thunks
+├── routes/            # React Router v7 configuration
+└── utils/             # Pure helper functions
+```
+
+---
+
+## 🚀 Setup & Installation
 
 ### Option 1: Docker (Recommended)
+Standardized environment with Postgres database included.
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-name/taskflow.git
-cd taskflow
+# 1. Clone & Enter
+git clone https://github.com/your-repo/taskflow.git && cd taskflow
 
-# Copy environment variables
+# 2. Setup Environment
 cp .env.example .env
 
-# Start the application
-docker compose up
+# 3. Spin up
+docker compose up --build
 ```
-
-The app will be available at http://localhost:3000
+*App will be live at `http://localhost:3000`*
 
 ### Option 2: Local Development
+Requires Node.js 20+.
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-name/taskflow.git
-cd taskflow
-
-# Install dependencies
+# 1. Install dependencies
 npm install
 
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
+# 2. Start Dev Server
 npm run dev
 ```
+*App will be live at `http://localhost:5173`*
 
-The app will be available at http://localhost:5173
+---
 
-## Mock API Spec
+## 🧪 Credentials (Demo Mode)
+TaskFlow comes pre-loaded with mock data for exploration:
 
-Since this is a frontend-only submission, the app uses MSW to mock all API endpoints.
+- **Email**: `test@example.com`
+- **Password**: `password123`
+- *Or use the "Quick Demo Login" on the Auth page.*
 
-### Base URL
-```
-http://localhost:4000 (proxied via MSW in both dev and production)
-```
+---
 
-> **Note:** MSW intercepts requests at the base URL — there is no `/api/` prefix in the actual handler paths.
+## 🚧 Honestly, What's Missing?
 
-### Auth Endpoints
+While TaskFlow is highly functional, it is currently in a "Frontend-Integrated" state:
 
-**POST `/auth/register`**
-```json
-// Request
-{ "name": "Jane Doe", "email": "jane@example.com", "password": "secret123" }
+1.  **Backend Implementation**: All data currently persists only in-memory (mocked) or localStorage. The Postgres container in Docker is ready but not yet linked to a live API service.
+2.  **Full OAuth Flow**: Google Login is UI-ready but requires a real backend to verify ID tokens.
+3.  **Real-time Collaboration**: The architecture is ready for WebSockets/Supabase Realtime, but it's currently polling or manual-refresh based.
+4.  **Test Coverage**: Unit and E2E tests are planned but minimal in the current version.
+5.  **Multi-Language Support**: Currently English only.
 
-// Response 201
-{ "token": "<jwt>", "user": { "id": "uuid", "name": "Jane Doe", "email": "jane@example.com" } }
-```
+---
 
-**POST `/auth/login`**
-```json
-// Request
-{ "email": "jane@example.com", "password": "secret123" }
-
-// Response 200
-{ "token": "<jwt>", "user": { "id": "uuid", "name": "Jane Doe", "email": "jane@example.com" } }
-```
-
-### Projects Endpoints
-
-**GET `/projects`** - List user's projects
-```json
-// Response 200
-{ "projects": [{ "id": "uuid", "name": "Project", "description": "...", "owner_id": "uuid", "created_at": "..." }] }
-```
-
-**POST `/projects`** - Create project
-```json
-// Request
-{ "name": "New Project", "description": "Optional" }
-
-// Response 201
-{ "id": "uuid", "name": "New Project", "description": "...", "owner_id": "uuid", "created_at": "..." }
-```
-
-**GET `/projects/:id`** - Get project with tasks
-```json
-// Response 200
-{ "id": "uuid", "name": "Project", ..., "tasks": [...] }
-```
-
-**PATCH `/projects/:id`** - Update project
-**DELETE `/projects/:id`** - Delete project (204)
-
-### Tasks Endpoints
-
-**GET `/projects/:id/tasks?status=&assignee=`** - List tasks with optional filters
-```json
-// Response 200
-{ "tasks": [...] }
-```
-
-**POST `/projects/:id/tasks`** - Create task
-```json
-// Request
-{ "title": "Task", "description": "...", "priority": "high", "assignee_id": "uuid", "due_date": "2026-04-15" }
-
-// Response 201
-{ "id": "uuid", "title": "Task", "status": "todo", "priority": "high", ... }
-```
-
-**PATCH `/tasks/:id`** - Update task
-```json
-// Request
-{ "title": "...", "status": "done", "priority": "low", ... }
-
-// Response 200
-{ "id": "uuid", "title": "...", "status": "done", ... }
-```
-
-**DELETE `/tasks/:id`** - Delete task (204)
-
-### Error Responses
-
-```json
-// 400 Validation error
-{ "error": "validation failed", "fields": { "email": "is required" } }
-
-// 401 Unauthenticated
-{ "error": "unauthorized" }
-
-// 403 Forbidden
-{ "error": "forbidden" }
-
-// 404 Not found
-{ "error": "not found" }
-```
-
-## Test Credentials
-
-The mock API includes a pre-configured test user:
-
-```
-Email:    test@example.com
-Password: password123
-```
-
-## Project Structure
-
-```
-src/
-├── apis/              # API call functions
-│   ├── api.ts         # Base axios instance
-│   ├── auth.ts        # Auth API calls
-│   └── projects.ts   # Projects & tasks API calls
-├── components/        # React components
-│   ├── ui/            # shadcn/ui components
-│   └── ...            # Feature components
-├── hooks/             # Custom React hooks
-├── mocks/             # MSW mock handlers
-│   ├── browser.ts     # MSW worker setup
-│   └── handlers.ts     # API mock definitions
-├── pages/             # Route pages
-│   ├── private/       # Protected pages
-│   └── public/        # Public pages
-├── redux/             # Redux state management
-│   └── slices/        # Redux Toolkit slices
-├── routes/            # React Router configuration
-└── App.tsx            # Root component
-```
-
-## Running Migrations
-
-N/A - This is a frontend-only submission using MSW for mocking. No database migrations are needed.
-
-## What You'd Do With More Time
-
-1. **Connect to a real backend**: Replace MSW with actual API calls, add proper error handling for network failures
-
-2. **Add integration tests**: Write tests using React Testing Library and Vitest
-
-3. **Implement drag-and-drop**: Use @dnd-kit to allow dragging tasks between Kanban columns
-
-4. **Dark mode**: Add theme toggle with next-themes (already in dependencies)
-
-5. **Real-time updates**: Add WebSocket support for live task updates across users
-
-6. **Pagination**: Add pagination to projects and tasks list endpoints
-
-7. **Stats endpoint UI**: Display task counts by status/assignee on the dashboard
-
-8. **Responsive mobile view**: The Kanban board needs optimization for mobile screens
-
-9. **Better empty states**: Add illustrations and more helpful empty state messaging
-
-10. **Form validation**: Use Zod (already in dependencies) for schema validation
-
-## License
-
-MIT
+## 📜 License
+Built with ❤️ under the MIT License.
