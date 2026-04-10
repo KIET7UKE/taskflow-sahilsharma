@@ -8,56 +8,50 @@ import type { RootState } from "./redux/reducers/rootReducer";
 import RouteOutlet from "./routes/routeOutlet";
 
 function App() {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
+  const { userDetails } = useSelector((state: RootState) => state.auth);
+  console.log(userDetails, "userDetails");
   return (
     <>
       <ScrollToTop />
       <Toaster position="top-right" />
 
       <Routes>
-        {/* Private routes */}
+        {/* Private routes first - when authenticated, these will be matched */}
         <Route element={<RouteOutlet />}>
-          {PrivateRoutes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              Component={route.component}
-            />
-          ))}
-          {/* Root redirect for authenticated users */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route>
+            {PrivateRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                Component={route.component}
+              />
+            ))}
+          </Route>
         </Route>
 
-        {/* Public routes */}
+        {/* Public routes - only matched if not authenticated or for public-only routes */}
         {PublicRoutes.map((route) => (
           <Route
             key={route.path}
             path={route.path}
-            element={
-              isAuthenticated ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <route.component />
-              )
-            }
+            Component={route.component}
           />
         ))}
 
-        {/* Fallback */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
+        <Route path={"/"} element={<PrivateLoginRedirect />} />
       </Routes>
     </>
   );
 }
+
+const PrivateLoginRedirect = () => {
+  const { isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+};
 
 export default App;
