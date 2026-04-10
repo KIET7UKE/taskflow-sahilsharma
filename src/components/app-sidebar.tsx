@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/sidebar";
 import { LayoutDashboardIcon, FolderIcon } from "lucide-react";
 
+import { NavUser } from "./nav-user";
+
 const data = {
   navMain: [
     {
@@ -69,10 +71,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-3 py-2 text-sm text-muted-foreground">
-          <p className="font-medium">{userDetails?.name || "User"}</p>
-          <p className="text-xs">{userDetails?.email}</p>
-        </div>
+        <NavUser user={{
+          name: userDetails?.name || "User",
+          email: userDetails?.email || "",
+          avatar: ""
+        }} />
       </SidebarFooter>
     </Sidebar>
   );

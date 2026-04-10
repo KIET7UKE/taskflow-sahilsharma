@@ -20,7 +20,6 @@ export default function ProjectsPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { projects, isLoading, error } = useSelector((state: RootState) => state.projects);
-  const { userDetails } = useSelector((state: RootState) => state.auth);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
