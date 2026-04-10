@@ -111,7 +111,3 @@ While TaskFlow is highly functional, it is currently in a "Frontend-Integrated" 
 4.  **Test Coverage**: Unit and E2E tests are planned but minimal in the current version.
 5.  **Multi-Language Support**: Currently English only.
 
----
-
-## 📜 License
-Built with ❤️ under the MIT License.
