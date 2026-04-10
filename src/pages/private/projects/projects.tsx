@@ -134,19 +134,31 @@ export default function ProjectsPage() {
             <div
               key={project.id}
               onClick={() => handleProjectClick(project)}
-              className="group relative rounded-lg border bg-card p-6 cursor-pointer hover:border-primary/50 transition-colors"
+              className="group relative overflow-hidden rounded-2xl border bg-card p-6 cursor-pointer hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/5"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between relative z-10">
                 <div className="flex-1">
-                  <h3 className="font-medium">{project.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <div className="size-2 rounded-full bg-primary animate-pulse" />
+                    <h3 className="font-semibold text-lg tracking-tight group-hover:text-primary transition-colors">{project.name}</h3>
+                  </div>
                   {project.description && (
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                       {project.description}
                     </p>
                   )}
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    Created {formatDate(project.created_at)}
-                  </p>
+                  <div className="mt-6 flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Created {formatDate(project.created_at)}
+                    </p>
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="size-6 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[10px] font-bold">
+                          {String.fromCharCode(64 + i)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <Button
                   variant="ghost"
@@ -155,11 +167,12 @@ export default function ProjectsPage() {
                     e.stopPropagation();
                     setProjectToDelete(project.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2 hover:bg-destructive/10 hover:text-destructive"
                 >
-                  <TrashIcon className="size-4 text-destructive" />
+                  <TrashIcon className="size-4" />
                 </Button>
               </div>
+              <div className="absolute -right-8 -top-8 size-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
             </div>
           ))}
         </div>

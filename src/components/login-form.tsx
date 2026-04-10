@@ -83,71 +83,84 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit}>
+    <div className={cn("flex flex-col gap-8", className)} {...props}>
+      <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border shadow-xl shadow-primary/5">
         <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
+          <div className="flex flex-col items-center gap-4 text-center mb-6">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
+              <GalleryVerticalEndIcon className="size-8" />
+            </div>
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+              <FieldDescription className="text-sm">
+                Enter your credentials to access your workspace
+              </FieldDescription>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <Field>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                aria-invalid={!!errors.email}
+                className="h-11 bg-muted/30 focus-visible:ring-primary/20"
+              />
+              {errors.email && <FieldError errors={[{ message: errors.email }]} />}
+            </Field>
+            
+            <Field>
+              <div className="flex items-center justify-between">
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <a href="#" className="text-xs text-primary hover:underline underline-offset-4">
+                  Forgot password?
+                </a>
+              </div>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                aria-invalid={!!errors.password}
+                className="h-11 bg-muted/30 focus-visible:ring-primary/20"
+              />
+              {errors.password && <FieldError errors={[{ message: errors.password }]} />}
+            </Field>
+
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full h-11 text-base font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
+            >
+              {isLoading ? "Logging in..." : "Continue to Dashboard"}
+            </Button>
+          </div>
+
+          <div className="mt-8 text-center text-sm">
+            <span className="text-muted-foreground">Don&apos;t have an account? </span>
             <a
               href="#"
-              className="flex flex-col items-center gap-2 font-medium"
+              onClick={(e) => {
+                e.preventDefault();
+                onSwitchToRegister?.();
+              }}
+              className="font-semibold text-primary hover:underline underline-offset-4"
             >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEndIcon className="size-6" />
-              </div>
-              <span className="sr-only">TaskFlow</span>
+              Sign up
             </a>
-            <h1 className="text-xl font-bold">Welcome to TaskFlow</h1>
-            <FieldDescription>
-              Don&apos;t have an account?{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSwitchToRegister?.();
-                }}
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                Sign up
-              </a>
-            </FieldDescription>
           </div>
-          <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="m@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              aria-invalid={!!errors.email}
-            />
-            {errors.email && <FieldError errors={[{ message: errors.email }]} />}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              aria-invalid={!!errors.password}
-            />
-            {errors.password && <FieldError errors={[{ message: errors.password }]} />}
-          </Field>
-          <Field>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Logging in..." : "Login"}
-            </Button>
-          </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </FieldDescription>
+      <div className="max-w-[280px] mx-auto text-center text-xs text-muted-foreground leading-relaxed">
+        By continuing, you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy Policy</a>.
+      </div>
     </div>
   );
 }

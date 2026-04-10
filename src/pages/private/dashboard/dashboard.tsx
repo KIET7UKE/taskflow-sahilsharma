@@ -31,24 +31,35 @@ export default function Dashboard() {
           Logout
         </Button>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            Total Projects
-          </h3>
-          <p className="text-3xl font-bold">0</p>
+      <div className="grid gap-6 md:grid-cols-3">
+        <div className="group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:shadow-primary/5">
+          <div className="relative z-10">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              Total Projects
+            </h3>
+            <p className="mt-2 text-4xl font-bold tracking-tight">0</p>
+          </div>
+          <div className="absolute -right-4 -bottom-4 size-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
         </div>
-        <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            Total Tasks
-          </h3>
-          <p className="text-3xl font-bold">0</p>
+        
+        <div className="group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:shadow-primary/5">
+          <div className="relative z-10">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              Total Tasks
+            </h3>
+            <p className="mt-2 text-4xl font-bold tracking-tight">0</p>
+          </div>
+          <div className="absolute -right-4 -bottom-4 size-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
         </div>
-        <div className="rounded-lg border bg-card p-6">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            Completed Tasks
-          </h3>
-          <p className="text-3xl font-bold">0</p>
+
+        <div className="group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all hover:shadow-lg hover:shadow-accent/5">
+          <div className="relative z-10">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              Completed Tasks
+            </h3>
+            <p className="mt-2 text-4xl font-bold tracking-tight text-accent-foreground">0</p>
+          </div>
+          <div className="absolute -right-4 -bottom-4 size-24 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors" />
         </div>
       </div>
     </div>

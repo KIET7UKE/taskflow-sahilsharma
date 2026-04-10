@@ -37,6 +37,7 @@ import {
   FilterIcon,
 } from "lucide-react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { cn } from "@/lib/utils";
 
 const STATUS_COLORS = {
   todo: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
@@ -261,22 +262,30 @@ export default function ProjectDetailPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {TASKS_COLUMNS.map((column) => (
-            <div key={column.key} className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 px-1">
-                <h3 className="font-medium text-sm">{column.label}</h3>
-                <Badge variant="secondary" className="h-5 px-1.5 text-xs">
+            <div key={column.key} className="flex flex-col gap-4">
+              <div className="flex items-center justify-between px-2">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "size-2 rounded-full",
+                    column.key === "todo" && "bg-slate-400",
+                    column.key === "in_progress" && "bg-primary",
+                    column.key === "done" && "bg-emerald-500"
+                  )} />
+                  <h3 className="font-bold text-sm tracking-tight text-foreground/80 uppercase">{column.label}</h3>
+                </div>
+                <Badge variant="secondary" className="h-5 px-2 text-[10px] font-bold bg-muted/50 border-none">
                   {getTasksByStatus(column.key).length}
                 </Badge>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 p-2 rounded-2xl bg-muted/20 min-h-[200px] border border-dashed border-muted">
                 {getTasksByStatus(column.key).map((task) => (
                   <div
                     key={task.id}
-                    className="group relative rounded-lg border bg-card p-3 cursor-pointer hover:border-primary/50 transition-colors"
+                    className="group relative overflow-hidden rounded-xl border bg-card p-4 cursor-pointer hover:border-primary/40 transition-all hover:shadow-md hover:shadow-primary/5 active:scale-[0.98]"
                     onClick={() => handleEditTask(task)}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-medium text-sm">{task.title}</h4>
+                    <div className="flex items-start justify-between gap-2 relative z-10">
+                      <h4 className="font-semibold text-sm tracking-tight group-hover:text-primary transition-colors">{task.title}</h4>
                       <Button
                         variant="ghost"
                         size="icon-sm"
@@ -284,38 +293,38 @@ export default function ProjectDetailPage() {
                           e.stopPropagation();
                           setTaskToDelete(task.id);
                         }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity -mr-1 -mt-1"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2 hover:bg-destructive/10 hover:text-destructive"
                       >
-                        <TrashIcon className="size-3 text-destructive" />
+                        <TrashIcon className="size-3" />
                       </Button>
                     </div>
                     {task.description && (
-                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                      <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                         {task.description}
                       </p>
                     )}
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <div className="mt-4 flex flex-wrap items-center gap-3 relative z-10">
                       <Badge
-                        className={`text-xs ${PRIORITY_COLORS[task.priority]}`}
+                        className={`text-[10px] uppercase font-bold px-2 py-0 border-none ${PRIORITY_COLORS[task.priority]}`}
                       >
                         {task.priority}
                       </Badge>
                       {task.due_date && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
                           <CalendarIcon className="size-3" />
                           {formatDate(task.due_date)}
                         </span>
                       )}
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-3 flex items-center gap-2 relative z-10">
                       <div onClick={(e) => e.stopPropagation()}>
                         <Select
                           value={task.status}
                           onValueChange={(value) =>
-                            handleStatusChange({ stopPropagation: () => {} } as any, task.id, value)
+                            handleStatusChange({ stopPropagation: () => { } } as any, task.id, value)
                           }
                         >
-                          <SelectTrigger className="h-6 text-xs w-[100px]">
+                          <SelectTrigger className="h-7 text-[10px] font-bold uppercase w-[110px] bg-muted/30 border-none shadow-none focus:ring-1 focus:ring-primary/20">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -326,8 +335,14 @@ export default function ProjectDetailPage() {
                         </Select>
                       </div>
                     </div>
+                    <div className="absolute -right-6 -bottom-6 size-20 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
                   </div>
                 ))}
+                {getTasksByStatus(column.key).length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground/40 italic text-xs">
+                    Drop tasks here
+                  </div>
+                )}
               </div>
             </div>
           ))}
