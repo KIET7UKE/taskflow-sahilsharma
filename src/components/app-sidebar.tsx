@@ -39,6 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
     projects: projects.map(p => ({
+      id: p.id,
       name: p.name,
       url: `/projects/${p.id}`,
       icon: <FolderIcon />,
