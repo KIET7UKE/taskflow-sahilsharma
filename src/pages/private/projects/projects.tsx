@@ -14,7 +14,17 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FolderIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useAppDispatch } from "../../../hooks/useAppDispatch";
+import { usePagination } from "@/hooks/use-pagination";
 import { ConfirmDialog } from "@/components/molecules/confirm-dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 /**
  * ProjectsPage Component.
@@ -32,6 +42,24 @@ export default function ProjectsPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isCreating, setIsCreating] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+
+  const {
+    currentPage,
+    totalPages,
+    startIndex,
+    endIndex,
+    pageRange,
+    handlePageChange,
+    handleNextPage,
+    handlePreviousPage,
+    hasPreviousPage,
+    hasNextPage,
+  } = usePagination({
+    totalItems: projects.length,
+    initialPageSize: 6, // 6 projects per page (2x3 or 3x2 grid)
+  });
+
+  const paginatedProjects = projects.slice(startIndex, endIndex);
 
   useEffect(() => {
     dispatch(fetchProjects());
@@ -163,8 +191,9 @@ export default function ProjectsPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {paginatedProjects.map((project) => (
             <div
               key={project.id}
               onClick={() => handleProjectClick(project)}
@@ -210,6 +239,88 @@ export default function ProjectsPage() {
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePreviousPage();
+                    }}
+                    className={!hasPreviousPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {pageRange[0] > 1 && (
+                  <>
+                    <PaginationItem>
+                      <PaginationLink 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(1);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        1
+                      </PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  </>
+                )}
+
+                {pageRange.map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      isActive={currentPage === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                {pageRange[pageRange.length - 1] < totalPages && (
+                  <>
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(totalPages);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNextPage();
+                    }}
+                    className={!hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </>
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
