@@ -1,3 +1,11 @@
+import {
+  BellIcon,
+  ChevronsUpDownIcon,
+  CreditCardIcon,
+  LogOutIcon,
+  SparklesIcon,
+  BadgeCheckIcon,
+} from "lucide-react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { logout } from "@/redux/slices/auth/authSlice"
@@ -22,7 +30,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 
 export function NavUser({
   user,
@@ -30,7 +37,7 @@ export function NavUser({
   user: {
     name: string
     email: string
-    avatar?: string
+    avatar: string
   }
 }) {
   const { isMobile } = useSidebar()
@@ -56,54 +63,71 @@ export function NavUser({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton size="lg" className="hover:bg-accent/50 transition-colors" />
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              />
             }
           >
-            <Avatar className="size-9 rounded-xl border-2 border-primary/10 shadow-sm">
+            <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-xl bg-primary/10 text-primary font-bold">
-                {userInitials}
-              </AvatarFallback>
+              <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">{userInitials}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight ml-1">
-              <span className="truncate font-semibold text-foreground/90">{user.name}</span>
-              <span className="truncate text-[11px] text-muted-foreground font-medium">
-                {user.email}
-              </span>
+            <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <span className="truncate font-semibold">{user.name}</span>
+              <span className="truncate text-xs">{user.email}</span>
             </div>
-            <EllipsisVerticalIcon className="ml-auto size-4 text-muted-foreground/60" />
+            <ChevronsUpDownIcon className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-56 rounded-xl shadow-2xl border-muted/50 p-2"
+            className="w-(--anchor-width) min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={12}
+            sideOffset={4}
           >
             <DropdownMenuGroup>
               <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-3 px-2 py-3 text-left">
-                  <Avatar className="size-10 rounded-xl border-2 border-primary/5">
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-xl bg-primary/5 text-primary font-bold">
-                      {userInitials}
-                    </AvatarFallback>
+                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-bold">{userInitials}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-bold text-foreground">{user.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {user.email}
-                    </span>
+                    <span className="truncate font-semibold">{user.name}</span>
+                    <span className="truncate text-xs">{user.email}</span>
                   </div>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator className="my-2 bg-primary/5" />
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <SparklesIcon />
+                Upgrade to Pro
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <BadgeCheckIcon />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <CreditCardIcon />
+                Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <BellIcon />
+                Notifications
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuItem 
-              className="rounded-lg h-10 cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground transition-all duration-200"
+              className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer font-bold"
               onClick={handleLogout}
             >
-              <LogOutIcon className="size-4 mr-2" />
-              <span className="font-bold tracking-tight">Sign out</span>
+              <LogOutIcon />
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
