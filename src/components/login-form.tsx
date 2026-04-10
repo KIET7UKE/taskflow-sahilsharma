@@ -15,15 +15,15 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { GalleryVerticalEndIcon } from "lucide-react";
-import { authApi } from "@/apis/auth";
-import { setAuthenticationSlice } from "@/redux/slices/auth/authSlice";
+import { loginThunk } from "@/redux/thunks/authThunks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   onSwitchToRegister?: () => void;
 }
 
 export function LoginForm({ className, onSwitchToRegister, ...props }: LoginFormProps) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -52,15 +52,7 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
 
     setIsLoading(true);
     try {
-      const response = await authApi.login(formData);
-      dispatch(
-        setAuthenticationSlice({
-          isAuthenticated: true,
-          token: response.token,
-          userDetails: response.user,
-        })
-      );
-      localStorage.setItem("token", response.token);
+      await dispatch(loginThunk(formData)).unwrap();
       toast.success("Login successful!");
       navigate("/dashboard");
     } catch (error: any) {

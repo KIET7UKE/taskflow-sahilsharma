@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { fetchProjects } from "@/redux/slices/projects/projectsSlice"
+import { fetchProjects } from "@/redux/thunks/projectThunks"
 import type { AppDispatch } from "@/redux/store/store"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"

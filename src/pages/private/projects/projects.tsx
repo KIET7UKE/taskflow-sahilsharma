@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { RootState } from "@/redux/reducers/rootReducer";
-import { fetchProjects, createProject, deleteProject } from "@/redux/slices/projects/projectsSlice";
+import { fetchProjects, createProject, deleteProject } from "@/redux/thunks/projectThunks";
 import type { Project } from "@/apis/projects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

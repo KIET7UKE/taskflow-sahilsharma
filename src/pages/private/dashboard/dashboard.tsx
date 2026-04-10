@@ -1,30 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/reducers/rootReducer";
-import { projectsApi } from "@/apis/projects";
+import { fetchDashboardStats } from "@/redux/thunks/projectThunks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 export default function Dashboard() {
   const { userDetails } = useSelector((state: RootState) => state.auth);
-  const [stats, setStats] = useState({
+  const { dashboardStats, isLoading } = useSelector((state: RootState) => state.projects);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchDashboardStats());
+  }, [dispatch]);
+
+  const stats = dashboardStats || {
     totalProjects: 0,
     totalTasks: 0,
     completedTasks: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const data = await projectsApi.fetchStats();
-        setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch stats", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadStats();
-  }, []);
+  };
 
   return (
     <div className="flex flex-col gap-8 p-8">

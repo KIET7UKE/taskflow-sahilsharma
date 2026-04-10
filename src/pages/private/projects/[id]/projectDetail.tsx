@@ -12,6 +12,8 @@ import {
   createTask,
   updateTask,
   deleteTask,
+} from "@/redux/thunks/projectThunks";
+import {
   optimisticUpdateTask,
   revertTaskUpdate,
 } from "@/redux/slices/projects/projectsSlice";

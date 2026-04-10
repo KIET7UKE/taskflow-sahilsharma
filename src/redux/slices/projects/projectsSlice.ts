@@ -1,86 +1,27 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import { projectsApi, tasksApi, type Task, type CreateProjectRequest, type CreateTaskRequest, type UpdateTaskRequest } from "@/apis/projects";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type Task } from "@/apis/projects";
 import type { ProjectsState } from "./types";
+import {
+  fetchProjects,
+  fetchProjectById,
+  createProject,
+  updateProject,
+  deleteProject,
+  fetchTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  fetchDashboardStats,
+} from "../../thunks/projectThunks";
 
 const initialState: ProjectsState = {
   projects: [],
   currentProject: null,
   currentProjectTasks: [],
+  dashboardStats: null,
   isLoading: false,
   error: null,
 };
-
-export const fetchProjects = createAsyncThunk(
-  "projects/fetchProjects",
-  async () => {
-    const response = await projectsApi.list();
-    return response.projects;
-  }
-);
-
-export const fetchProjectById = createAsyncThunk(
-  "projects/fetchProjectById",
-  async (id: string) => {
-    const response = await projectsApi.getById(id);
-    return response;
-  }
-);
-
-export const createProject = createAsyncThunk(
-  "projects/createProject",
-  async (data: CreateProjectRequest) => {
-    const response = await projectsApi.create(data);
-    return response;
-  }
-);
-
-export const updateProject = createAsyncThunk(
-  "projects/updateProject",
-  async ({ id, data }: { id: string; data: Partial<CreateProjectRequest> }) => {
-    const response = await projectsApi.update(id, data);
-    return response;
-  }
-);
-
-export const deleteProject = createAsyncThunk(
-  "projects/deleteProject",
-  async (id: string) => {
-    await projectsApi.delete(id);
-    return id;
-  }
-);
-
-export const fetchTasks = createAsyncThunk(
-  "projects/fetchTasks",
-  async ({ projectId, status, assignee }: { projectId: string; status?: string; assignee?: string }) => {
-    const response = await tasksApi.list(projectId, { status, assignee });
-    return response.tasks;
-  }
-);
-
-export const createTask = createAsyncThunk(
-  "projects/createTask",
-  async ({ projectId, data }: { projectId: string; data: CreateTaskRequest }) => {
-    const response = await tasksApi.create(projectId, data);
-    return response;
-  }
-);
-
-export const updateTask = createAsyncThunk(
-  "projects/updateTask",
-  async ({ taskId, data }: { taskId: string; data: UpdateTaskRequest }) => {
-    const response = await tasksApi.update(taskId, data);
-    return response;
-  }
-);
-
-export const deleteTask = createAsyncThunk(
-  "projects/deleteTask",
-  async (taskId: string) => {
-    await tasksApi.delete(taskId);
-    return taskId;
-  }
-);
 
 const projectsSlice = createSlice({
   name: "projects",
@@ -192,6 +133,18 @@ const projectsSlice = createSlice({
       // Delete task
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.currentProjectTasks = state.currentProjectTasks.filter((t) => t.id !== action.payload);
+      })
+      // Fetch Dashboard Stats
+      .addCase(fetchDashboardStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchDashboardStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dashboardStats = action.payload;
+      })
+      .addCase(fetchDashboardStats.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "Failed to fetch dashboard stats";
       });
   },
 });
