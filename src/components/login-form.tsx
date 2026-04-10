@@ -74,41 +74,36 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
   };
 
   return (
-    <div className={cn("flex flex-col gap-8", className)} {...props}>
-      <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border shadow-xl shadow-primary/5">
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col gap-2 text-center lg:text-left">
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
+        <p className="text-muted-foreground">
+          Enter your credentials to access your workspace
+        </p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
         <FieldGroup>
-          <div className="flex flex-col items-center gap-4 text-center mb-6">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner">
-              <GalleryVerticalEndIcon className="size-8" />
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
-              <FieldDescription className="text-sm">
-                Enter your credentials to access your workspace
-              </FieldDescription>
-            </div>
-          </div>
-          
           <div className="space-y-4">
             <Field>
-              <FieldLabel htmlFor="email">Email <span className="text-destructive">*</span></FieldLabel>
+              <FieldLabel htmlFor="email" className="text-sm font-medium">Email Address</FieldLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="name@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 aria-invalid={!!errors.email}
-                className="h-11 bg-muted/30 focus-visible:ring-primary/20"
+                className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
               />
               {errors.email && <FieldError errors={[{ message: errors.email }]} />}
             </Field>
             
             <Field>
               <div className="flex items-center justify-between">
-                <FieldLabel htmlFor="password">Password <span className="text-destructive">*</span></FieldLabel>
-                <a href="#" className="text-xs text-primary hover:underline underline-offset-4">
+                <FieldLabel htmlFor="password" className="text-sm font-medium">Password</FieldLabel>
+                <a href="#" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
                   Forgot password?
                 </a>
               </div>
@@ -116,11 +111,11 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
                 aria-invalid={!!errors.password}
-                className="h-11 bg-muted/30 focus-visible:ring-primary/20"
+                className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
               />
               {errors.password && <FieldError errors={[{ message: errors.password }]} />}
             </Field>
@@ -128,29 +123,30 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="w-full h-11 text-base font-semibold transition-all hover:opacity-90 active:scale-[0.98]"
+              className="w-full h-12 text-base font-bold rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-1px] active:translate-y-[0px]"
             >
-              {isLoading ? "Logging in..." : "Continue to Dashboard"}
+              {isLoading ? "Signing in..." : "Sign in to TaskFlow"}
             </Button>
           </div>
 
-          <div className="mt-8 text-center text-sm">
+          <div className="text-center text-sm">
             <span className="text-muted-foreground">Don&apos;t have an account? </span>
-            <a
-              href="#"
+            <button
+              type="button"
               onClick={(e) => {
                 e.preventDefault();
                 onSwitchToRegister?.();
               }}
-              className="font-semibold text-primary hover:underline underline-offset-4"
+              className="font-bold text-primary hover:text-primary/80 transition-colors"
             >
-              Sign up
-            </a>
+              Create an account
+            </button>
           </div>
         </FieldGroup>
       </form>
-      <div className="max-w-[280px] mx-auto text-center text-xs text-muted-foreground leading-relaxed">
-        By continuing, you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy Policy</a>.
+      
+      <div className="text-center text-[11px] text-muted-foreground/60 leading-relaxed px-4">
+        By continuing, you agree to our <a href="#" className="underline hover:text-primary">Terms of Service</a> and <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
       </div>
     </div>
   );

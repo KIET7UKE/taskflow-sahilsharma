@@ -92,96 +92,106 @@ export function RegisterForm({ className, onSwitchToLogin, ...props }: RegisterF
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-2 text-center lg:text-left">
+        <h1 className="text-3xl font-bold tracking-tight">Create your account</h1>
+        <p className="text-muted-foreground">
+          Join TaskFlow today and start managing projects like a pro.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
+          <div className="space-y-4">
+            <Field>
+              <FieldLabel htmlFor="name" className="text-sm font-medium">Full Name</FieldLabel>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
+                aria-invalid={!!errors.name}
+                className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
+              />
+              {errors.name && <FieldError errors={[{ message: errors.name }]} />}
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="email" className="text-sm font-medium">Email Address</FieldLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                aria-invalid={!!errors.email}
+                className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
+              />
+              {errors.email && <FieldError errors={[{ message: errors.email }]} />}
+            </Field>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field>
+                <FieldLabel htmlFor="password" className="text-sm font-medium">Password</FieldLabel>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  aria-invalid={!!errors.password}
+                  className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
+                />
+                {errors.password && <FieldError errors={[{ message: errors.password }]} />}
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="confirmPassword" className="text-sm font-medium">Confirm</FieldLabel>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  aria-invalid={!!errors.confirmPassword}
+                  className="h-12 bg-background border-input px-4 rounded-xl focus-visible:ring-primary/20 transition-all"
+                />
+                {errors.confirmPassword && <FieldError errors={[{ message: errors.confirmPassword }]} />}
+              </Field>
+            </div>
+
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full h-12 text-base font-bold rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-1px] active:translate-y-[0px]"
             >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEndIcon className="size-6" />
-              </div>
-              <span className="sr-only">TaskFlow</span>
-            </a>
-            <h1 className="text-xl font-bold">Create your account</h1>
-            <FieldDescription>
-              Already have an account?{" "}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSwitchToLogin?.();
-                }}
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                Sign in
-              </a>
-            </FieldDescription>
-          </div>
-          <Field>
-            <FieldLabel htmlFor="name">Name <span className="text-destructive">*</span></FieldLabel>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="John Doe"
-              value={formData.name}
-              onChange={handleChange}
-              aria-invalid={!!errors.name}
-            />
-            {errors.name && <FieldError errors={[{ message: errors.name }]} />}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="email">Email <span className="text-destructive">*</span></FieldLabel>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="m@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              aria-invalid={!!errors.email}
-            />
-            {errors.email && <FieldError errors={[{ message: errors.email }]} />}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="password">Password <span className="text-destructive">*</span></FieldLabel>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="At least 6 characters"
-              value={formData.password}
-              onChange={handleChange}
-              aria-invalid={!!errors.password}
-            />
-            {errors.password && <FieldError errors={[{ message: errors.password }]} />}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="confirmPassword">Confirm Password <span className="text-destructive">*</span></FieldLabel>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              aria-invalid={!!errors.confirmPassword}
-            />
-            {errors.confirmPassword && <FieldError errors={[{ message: errors.confirmPassword }]} />}
-          </Field>
-          <Field>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? "Creating account..." : "Start your free trial"}
             </Button>
-          </Field>
+          </div>
+
+          <div className="text-center text-sm">
+            <span className="text-muted-foreground">Already have an account? </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                onSwitchToLogin?.();
+              }}
+              className="font-bold text-primary hover:text-primary/80 transition-colors"
+            >
+              Sign in
+            </button>
+          </div>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </FieldDescription>
+
+      <div className="text-center text-[11px] text-muted-foreground/60 leading-relaxed px-4">
+        By continuing, you agree to our <a href="#" className="underline hover:text-primary">Terms of Service</a> and <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
+      </div>
     </div>
   );
 }
