@@ -130,6 +130,15 @@ export const handlers = [
     );
   }),
 
+  // Stats handler
+  http.get("/api/stats", () => {
+    return HttpResponse.json({
+      totalProjects: projectList.length,
+      totalTasks: projectTasks.length,
+      completedTasks: projectTasks.filter(t => t.status === "done").length
+    });
+  }),
+
   // Projects handlers
   http.get("/api/projects", () => {
     return HttpResponse.json({

@@ -63,6 +63,8 @@ export const projectsApi = {
     patchAPI<Project>(`/api/projects/${id}`, data),
 
   delete: (id: string) => deleteAPI<void>(`/api/projects/${id}`),
+
+  fetchStats: () => getAPI<{ totalProjects: number; totalTasks: number; completedTasks: number }>("/api/stats"),
 };
 
 export const tasksApi = {
