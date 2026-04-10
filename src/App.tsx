@@ -8,50 +8,56 @@ import type { RootState } from "./redux/reducers/rootReducer";
 import RouteOutlet from "./routes/routeOutlet";
 
 function App() {
-  const { userDetails } = useSelector((state: RootState) => state.auth);
-  console.log(userDetails, "userDetails");
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
   return (
     <>
       <ScrollToTop />
       <Toaster position="top-right" />
 
       <Routes>
-        {/* Private routes first - when authenticated, these will be matched */}
+        {/* Private routes */}
         <Route element={<RouteOutlet />}>
-          <Route>
-            {PrivateRoutes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                Component={route.component}
-              />
-            ))}
-          </Route>
+          {PrivateRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              Component={route.component}
+            />
+          ))}
+          {/* Root redirect for authenticated users */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
 
-        {/* Public routes - only matched if not authenticated or for public-only routes */}
+        {/* Public routes */}
         {PublicRoutes.map((route) => (
           <Route
             key={route.path}
             path={route.path}
-            Component={route.component}
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <route.component />
+              )
+            }
           />
         ))}
 
-        <Route path={"/"} element={<PrivateLoginRedirect />} />
+        {/* Fallback */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
       </Routes>
     </>
   );
 }
-
-const PrivateLoginRedirect = () => {
-  const { isAuthenticated } = useSelector(
-    (state: RootState) => state.auth
-  );
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-};
 
 export default App;
