@@ -1,6 +1,7 @@
+"use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useAppDispatch } from "../../../../hooks/useAppDispatch";
 import { useSelector } from "react-redux";
@@ -20,7 +21,6 @@ import {
 import type { Task, CreateTaskRequest, UpdateTaskRequest } from "@/apis/projects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,21 +33,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  ArrowLeftIcon,
   PlusIcon,
   TrashIcon,
   CalendarIcon,
-  FilterIcon,
   Edit2Icon,
+  GripVertical,
 } from "lucide-react";
-import { ConfirmDialog } from "@/components/confirm-dialog";
 import { cn } from "@/lib/utils";
-
-const STATUS_COLORS = {
-  todo: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  in_progress: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  done: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-};
+import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  DragStartEvent,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const PRIORITY_COLORS = {
   low: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
@@ -61,10 +72,167 @@ const TASKS_COLUMNS = [
   { key: "done", label: "Done" },
 ];
 
+interface TaskCardProps {
+  task: Task;
+  onEdit: (task: Task) => void;
+  onDelete: (taskId: string) => void;
+  onStatusChange: (taskId: string, status: string) => void;
+  isDragging?: boolean;
+}
+
+function TaskCard({ task, onEdit, onDelete, onStatusChange, isDragging }: TaskCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Only trigger edit if not dragging
+    if (!isSortableDragging) {
+      onEdit(task);
+    }
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group relative overflow-hidden rounded-xl border bg-card p-4 cursor-pointer hover:border-primary/40 transition-all hover:shadow-md hover:shadow-primary/5",
+        isSortableDragging && "opacity-50 scale-105 z-50 cursor-grabbing",
+        isDragging && "opacity-90 scale-105 shadow-xl cursor-grabbing"
+      )}
+      onClick={handleClick}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="flex items-start justify-between gap-2 relative z-10">
+        <h4 className="font-semibold text-sm tracking-tight group-hover:text-primary transition-colors">
+          {task.title}
+        </h4>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(task.id);
+          }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2 hover:bg-destructive/10 hover:text-destructive"
+        >
+          <TrashIcon className="size-3" />
+        </Button>
+      </div>
+      {task.description && (
+        <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+          {task.description}
+        </p>
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-3 relative z-10">
+        <Badge
+          className={`text-[10px] uppercase font-bold px-2 py-0 border-none ${PRIORITY_COLORS[task.priority]}`}
+        >
+          {task.priority}
+        </Badge>
+        {task.due_date && (
+          <span className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
+            <CalendarIcon className="size-3" />
+            {formatDate(task.due_date)}
+          </span>
+        )}
+      </div>
+      <div className="mt-3 flex items-center gap-2 relative z-10">
+        <div onClick={(e) => e.stopPropagation()}>
+          <Select
+            value={task.status}
+            onValueChange={(value) => value && onStatusChange(task.id, value)}
+          >
+            <SelectTrigger className="h-7 text-[10px] font-bold uppercase w-[110px] bg-muted/30 border-none shadow-none focus:ring-1 focus:ring-primary/20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todo">To Do</SelectItem>
+              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="done">Done</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="absolute -right-6 -bottom-6 size-20 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
+    </div>
+  );
+}
+
+function DroppableColumn({
+  id,
+  title,
+  count,
+  children,
+}: {
+  id: string;
+  title: string;
+  count: number;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-2">
+          <div
+            className={cn(
+              "size-2 rounded-full",
+              id === "todo" && "bg-slate-400",
+              id === "in_progress" && "bg-primary",
+              id === "done" && "bg-emerald-500"
+            )}
+          />
+          <h3 className="font-bold text-sm tracking-tight text-foreground/80 uppercase">
+            {title}
+          </h3>
+        </div>
+        <Badge variant="secondary" className="h-5 px-2 text-[10px] font-bold bg-muted/50 border-none">
+          {count}
+        </Badge>
+      </div>
+      <div
+        ref={setNodeRef}
+        className={cn(
+          "flex flex-col gap-3 p-2 rounded-2xl bg-muted/20 min-h-[200px] border border-dashed border-muted transition-colors",
+          isOver && "border-primary bg-primary/5"
+        )}
+      >
+        {children}
+        {count === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground/40 italic text-xs">
+            Drop tasks here
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { currentProject, currentProjectTasks, isLoading, error } = useSelector(
     (state: RootState) => state.projects
   );
@@ -85,23 +253,32 @@ export default function ProjectDetailPage() {
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [projectFormData, setProjectFormData] = useState({ name: "", description: "" });
   const [projectFormErrors, setProjectFormErrors] = useState<Record<string, string>>({});
-  
-  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     if (id) {
       dispatch(fetchProjectById(id));
-      // Initially fetch tasks without filters
       dispatch(fetchTasks({ projectId: id }));
     }
   }, [id, dispatch]);
 
   useEffect(() => {
     if (id && (statusFilter !== "all" || assigneeFilter !== "all")) {
-      dispatch(fetchTasks({ 
-        projectId: id, 
+      dispatch(fetchTasks({
+        projectId: id,
         status: statusFilter === "all" ? undefined : statusFilter,
-        assignee: assigneeFilter === "all" ? undefined : assigneeFilter
+        assignee: assigneeFilter === "all" ? undefined : assigneeFilter,
       }));
     } else if (id && statusFilter === "all" && assigneeFilter === "all") {
       dispatch(fetchTasks({ projectId: id }));
@@ -141,8 +318,9 @@ export default function ProjectDetailPage() {
       toast.success("Project updated successfully!");
       setIsProjectDialogOpen(false);
       setProjectFormErrors({});
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update project");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to update project";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -158,16 +336,15 @@ export default function ProjectDetailPage() {
       toast.success("Task created successfully!");
       setIsTaskDialogOpen(false);
       resetTaskForm();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to create task");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to create task";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleUpdateTask = async (taskId: string, updates: UpdateTaskRequest) => {
-    if (!id) return;
-
+  const handleUpdateTaskStatus = async (taskId: string, updates: UpdateTaskRequest) => {
     const task = currentProjectTasks.find((t) => t.id === taskId);
     if (!task) return;
 
@@ -176,28 +353,15 @@ export default function ProjectDetailPage() {
 
     try {
       await dispatch(updateTask({ taskId, data: updates })).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       dispatch(revertTaskUpdate(task));
-      toast.error(err?.message || "Failed to update task");
+      const errorMessage = err instanceof Error ? err.message : "Failed to update task";
+      toast.error(errorMessage);
     }
   };
 
-  const handleDeleteTask = async (taskId: string) => {
-    try {
-      await dispatch(deleteTask(taskId)).unwrap();
-      toast.success("Task deleted successfully!");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to delete task");
-    } finally {
-      setTaskToDelete(null);
-    }
-  };
-
-  const handleStatusChange = (e: React.MouseEvent | React.FocusEvent, taskId: string, value: string | null) => {
-    e.stopPropagation();
-    if (value && id) {
-      handleUpdateTask(taskId, { status: value as Task["status"] });
-    }
+  const handleStatusChange = (taskId: string, status: string) => {
+    handleUpdateTaskStatus(taskId, { status: status as Task["status"] });
   };
 
   const handleEditTask = (task: Task) => {
@@ -211,6 +375,28 @@ export default function ProjectDetailPage() {
     setIsTaskDialogOpen(true);
   };
 
+  const handleUpdateTaskFromDialog = async () => {
+    if (!editingTask || !id) return;
+
+    setIsSubmitting(true);
+    try {
+      await dispatch(
+        updateTask({
+          taskId: editingTask.id,
+          data: taskFormData as UpdateTaskRequest,
+        })
+      ).unwrap();
+      toast.success("Task updated successfully!");
+      setIsTaskDialogOpen(false);
+      resetTaskForm();
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to update task";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const resetTaskForm = () => {
     setEditingTask(null);
     setTaskFormData({
@@ -222,31 +408,72 @@ export default function ProjectDetailPage() {
     setTaskFormErrors({});
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseTaskDialog = () => {
     setIsTaskDialogOpen(false);
     resetTaskForm();
   };
 
-  const filteredTasks = currentProjectTasks;
+  const handleDeleteTask = (taskId: string) => {
+    if (!confirm("Are you sure you want to delete this task?")) return;
 
-  const getTasksByStatus = (status: string) => {
-    return filteredTasks.filter((task) => task.status === status);
+    dispatch(deleteTask(taskId))
+      .unwrap()
+      .then(() => toast.success("Task deleted successfully!"))
+      .catch((err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : "Failed to delete task";
+        toast.error(errorMessage);
+      });
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  const getTasksByStatus = (status: string) => {
+    let tasks = currentProjectTasks.filter((task) => task.status === status);
+    if (statusFilter !== "all") {
+      tasks = tasks.filter((task) => task.status === statusFilter);
+    }
+    if (assigneeFilter !== "all") {
+      tasks = tasks.filter((task) => {
+        if (assigneeFilter === "unassigned") return !task.assignee_id;
+        if (assigneeFilter === userDetails?.id) return task.assignee_id === userDetails?.id;
+        return true;
+      });
+    }
+    return tasks;
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const task = currentProjectTasks.find((t) => t.id === event.active.id);
+    if (task) {
+      setActiveTask(task);
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveTask(null);
+
+    if (!over) return;
+
+    const activeTaskId = active.id as string;
+    const overId = over.id as string;
+
+    // Check if dropped on a column
+    const targetColumn = TASKS_COLUMNS.find((col) => col.key === overId);
+    if (targetColumn) {
+      handleUpdateTaskStatus(activeTaskId, { status: targetColumn.key as Task["status"] });
+      return;
+    }
+
+    // Check if dropped on another task
+    const overTask = currentProjectTasks.find((t) => t.id === overId);
+    if (overTask && overTask.status) {
+      handleUpdateTaskStatus(activeTaskId, { status: overTask.status });
+    }
   };
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-6">
         <p className="text-destructive">{error}</p>
-        <Button onClick={() => navigate("/projects")}>Back to Projects</Button>
       </div>
     );
   }
@@ -281,8 +508,6 @@ export default function ProjectDetailPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        
-
         <div className="flex flex-col gap-1">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 pl-1">
             Status
@@ -348,93 +573,52 @@ export default function ProjectDetailPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {TASKS_COLUMNS.map((column) => (
-            <div key={column.key} className="flex flex-col gap-4">
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "size-2 rounded-full",
-                    column.key === "todo" && "bg-slate-400",
-                    column.key === "in_progress" && "bg-primary",
-                    column.key === "done" && "bg-emerald-500"
-                  )} />
-                  <h3 className="font-bold text-sm tracking-tight text-foreground/80 uppercase">{column.label}</h3>
-                </div>
-                <Badge variant="secondary" className="h-5 px-2 text-[10px] font-bold bg-muted/50 border-none">
-                  {getTasksByStatus(column.key).length}
-                </Badge>
-              </div>
-              <div className="flex flex-col gap-3 p-2 rounded-2xl bg-muted/20 min-h-[200px] border border-dashed border-muted">
-                {getTasksByStatus(column.key).map((task) => (
-                  <div
-                    key={task.id}
-                    className="group relative overflow-hidden rounded-xl border bg-card p-4 cursor-pointer hover:border-primary/40 transition-all hover:shadow-md hover:shadow-primary/5 active:scale-[0.98]"
-                    onClick={() => handleEditTask(task)}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {TASKS_COLUMNS.map((column) => {
+              const columnTasks = getTasksByStatus(column.key);
+              return (
+                <DroppableColumn
+                  key={column.key}
+                  id={column.key}
+                  title={column.label}
+                  count={columnTasks.length}
+                >
+                  <SortableContext
+                    items={columnTasks.map((t) => t.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <div className="flex items-start justify-between gap-2 relative z-10">
-                      <h4 className="font-semibold text-sm tracking-tight group-hover:text-primary transition-colors">{task.title}</h4>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setTaskToDelete(task.id);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2 -mt-2 hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <TrashIcon className="size-3" />
-                      </Button>
-                    </div>
-                    {task.description && (
-                      <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                        {task.description}
-                      </p>
-                    )}
-                    <div className="mt-4 flex flex-wrap items-center gap-3 relative z-10">
-                      <Badge
-                        className={`text-[10px] uppercase font-bold px-2 py-0 border-none ${PRIORITY_COLORS[task.priority]}`}
-                      >
-                        {task.priority}
-                      </Badge>
-                      {task.due_date && (
-                        <span className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground">
-                          <CalendarIcon className="size-3" />
-                          {formatDate(task.due_date)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-3 flex items-center gap-2 relative z-10">
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Select
-                          value={task.status}
-                          onValueChange={(value) =>
-                            handleStatusChange({ stopPropagation: () => { } } as any, task.id, value)
-                          }
-                        >
-                          <SelectTrigger className="h-7 text-[10px] font-bold uppercase w-[110px] bg-muted/30 border-none shadow-none focus:ring-1 focus:ring-primary/20">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="todo">To Do</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="done">Done</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="absolute -right-6 -bottom-6 size-20 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
-                  </div>
-                ))}
-                {getTasksByStatus(column.key).length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground/40 italic text-xs">
-                    Drop tasks here
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+                    {columnTasks.map((task) => (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        onEdit={handleEditTask}
+                        onDelete={handleDeleteTask}
+                        onStatusChange={handleStatusChange}
+                      />
+                    ))}
+                  </SortableContext>
+                </DroppableColumn>
+              );
+            })}
+          </div>
+          <DragOverlay>
+            {activeTask && (
+              <TaskCard
+                task={activeTask}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                onStatusChange={() => {}}
+                isDragging
+              />
+            )}
+          </DragOverlay>
+        </DndContext>
       )}
 
       <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
@@ -448,28 +632,28 @@ export default function ProjectDetailPage() {
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
-                <FieldLabel htmlFor="projectName">Name <span className="text-destructive">*</span></FieldLabel>
+                <FieldLabel htmlFor="projectName">Project Name</FieldLabel>
                 <Input
                   id="projectName"
                   value={projectFormData.name}
-                  onChange={(e) => {
-                    setProjectFormData((prev) => ({ ...prev, name: e.target.value }));
-                    if (projectFormErrors.name) setProjectFormErrors({});
-                  }}
+                  onChange={(e) =>
+                    setProjectFormData((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="Enter project name"
                 />
                 {projectFormErrors.name && (
                   <FieldError errors={[{ message: projectFormErrors.name }]} />
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="projectDescription">Description <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
-                <Textarea
+                <FieldLabel htmlFor="projectDescription">Description</FieldLabel>
+                <Input
                   id="projectDescription"
                   value={projectFormData.description}
                   onChange={(e) =>
                     setProjectFormData((prev) => ({ ...prev, description: e.target.value }))
                   }
-                  placeholder="Enter project description"
+                  placeholder="Enter project description (optional)"
                 />
               </Field>
             </div>
@@ -485,20 +669,31 @@ export default function ProjectDetailPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isTaskDialogOpen} onOpenChange={handleCloseDialog}>
+      <Dialog open={isTaskDialogOpen} onOpenChange={handleCloseTaskDialog}>
         <DialogContent>
-          <form onSubmit={editingTask ? (e) => { e.preventDefault(); handleUpdateTask(editingTask.id, taskFormData as UpdateTaskRequest); handleCloseDialog(); } : handleCreateTask}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (editingTask) {
+                handleUpdateTaskFromDialog();
+              } else {
+                handleCreateTask(e);
+              }
+            }}
+          >
             <DialogHeader>
               <DialogTitle>{editingTask ? "Edit Task" : "Create New Task"}</DialogTitle>
               <DialogDescription>
-                {editingTask ? "Update the task details." : "Add a new task to this project."}
+                {editingTask
+                  ? "Update the task details below."
+                  : "Add a new task to this project."}
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <Field>
-                <FieldLabel htmlFor="title">Title <span className="text-destructive">*</span></FieldLabel>
+                <FieldLabel htmlFor="taskTitle">Title</FieldLabel>
                 <Input
-                  id="title"
+                  id="taskTitle"
                   value={taskFormData.title}
                   onChange={(e) =>
                     setTaskFormData((prev) => ({ ...prev, title: e.target.value }))
@@ -510,22 +705,25 @@ export default function ProjectDetailPage() {
                 )}
               </Field>
               <Field>
-                <FieldLabel htmlFor="description">Description <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
-                <Textarea
-                  id="description"
+                <FieldLabel htmlFor="taskDescription">Description</FieldLabel>
+                <Input
+                  id="taskDescription"
                   value={taskFormData.description}
                   onChange={(e) =>
                     setTaskFormData((prev) => ({ ...prev, description: e.target.value }))
                   }
-                  placeholder="Enter task description"
+                  placeholder="Enter task description (optional)"
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="priority">Priority <span className="text-destructive">*</span></FieldLabel>
+                <FieldLabel htmlFor="taskPriority">Priority</FieldLabel>
                 <Select
                   value={taskFormData.priority}
                   onValueChange={(value) =>
-                    setTaskFormData((prev) => ({ ...prev, priority: value as Task["priority"] }))
+                    setTaskFormData((prev) => ({
+                      ...prev,
+                      priority: value as Task["priority"],
+                    }))
                   }
                 >
                   <SelectTrigger>
@@ -539,9 +737,9 @@ export default function ProjectDetailPage() {
                 </Select>
               </Field>
               <Field>
-                <FieldLabel htmlFor="due_date">Due Date <span className="text-muted-foreground font-normal ml-1">(optional)</span></FieldLabel>
+                <FieldLabel htmlFor="taskDueDate">Due Date</FieldLabel>
                 <Input
-                  id="due_date"
+                  id="taskDueDate"
                   type="date"
                   value={taskFormData.due_date}
                   onChange={(e) =>
@@ -551,24 +749,20 @@ export default function ProjectDetailPage() {
               </Field>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleCloseDialog}>
+              <Button type="button" variant="outline" onClick={handleCloseTaskDialog}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : editingTask ? "Save Changes" : "Create Task"}
+                {isSubmitting
+                  ? "Saving..."
+                  : editingTask
+                  ? "Save Changes"
+                  : "Create Task"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-      <ConfirmDialog
-        open={!!taskToDelete}
-        onOpenChange={(open) => !open && setTaskToDelete(null)}
-        title="Delete Task"
-        description="Are you sure you want to delete this task? This action cannot be undone."
-        onConfirm={() => taskToDelete && handleDeleteTask(taskToDelete)}
-        confirmText="Delete Task"
-      />
     </div>
   );
 }
