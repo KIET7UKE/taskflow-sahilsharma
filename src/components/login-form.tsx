@@ -65,6 +65,26 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
     }
   };
 
+  const handleDemoLogin = async () => {
+    const demoData = {
+      email: "test@example.com",
+      password: "password123",
+    };
+    setFormData(demoData);
+    setErrors({});
+    setIsLoading(true);
+    
+    try {
+      await dispatch(loginThunk(demoData)).unwrap();
+      toast.success("Demo Login successful!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast.error("Demo login failed. Please try manual login.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -121,6 +141,27 @@ export function LoginForm({ className, onSwitchToRegister, ...props }: LoginForm
               className="w-full h-12 text-base font-bold rounded-xl shadow-lg shadow-primary/20 transition-all hover:translate-y-[-1px] active:translate-y-[0px]"
             >
               {isLoading ? "Signing in..." : "Sign in to TaskFlow"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground font-medium">
+                  Or explore TaskFlow
+                </span>
+              </div>
+            </div>
+
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={handleDemoLogin}
+              disabled={isLoading}
+              className="w-full h-12 text-sm font-semibold border-primary/20 hover:bg-primary/5 hover:text-primary rounded-xl transition-all"
+            >
+              Quick Demo Login
             </Button>
           </div>
 
